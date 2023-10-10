@@ -18,8 +18,7 @@ function urlForBulb(hib)  {
 export async function dumpBulbStates()   {
     const reply = await fetch(url0 + "/lights");
     const bulbjson = await reply.json();
-    
-    console.log("EEE]]] ", bulbjson);
+    console.log(bulbjson);
     return bulbjson;
 }
 
@@ -49,7 +48,6 @@ export function setBulbOnOff(hib, want_on)  {
 
 
 
-
 export async function  turnAllOnOff(want)   {
     let bulbs = await dumpBulbStates();
     for (let ibulb in bulbs)  {
@@ -66,7 +64,7 @@ export async function  turnAllOnOff(want)   {
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
 <div class="buttonbar">
-    <div class="hubbutton"><button on:click={dumpBulbStates}>bulbdump</button></div>
+    <div class="hubbutton"><button on:click={dumpBulbStates}>lights json</button></div>
     <div class="hubbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
     <div class="hubbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
 </div>

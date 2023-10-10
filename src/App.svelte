@@ -22,13 +22,30 @@
   let hub2;
   
   let all_hubs = [hub1, hub2];  // ineffective here; good stuff happens in onMount()
+
+  
+  let textdump="";
+  
+  async function dumpAllLights()  {
+    let dt = "";
+    for (let hub of all_hubs)   {
+        let jsonx = await hub.dumpBulbStates();
+        console.log(hub);
+        console.log(jsonx);
+        console.log("  - ");
+        dt +=  JSON.stringify( jsonx );
+    }
+    textdump = dt;
+  }
+  
   
   
   async function turnAllOnOff(want)   {
     for (let hub of all_hubs)  {
-        hub.turnAllOnOff(want);
+        hub.turnAllOnOff(want); 
     }
   }
+  
   
   
   onMount(() => {
@@ -46,7 +63,14 @@
     <div class="buttonbunch"> 
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+        <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
     </div>
+    
+    
+    <div class="dumpzone">
+    <textarea bind:value={textdump}></textarea>
+    </div>
+    
     
     <address>
     Source: <a href="https://github.com/darenw/WebPhue">WebPhue</a> at GitHub 
@@ -63,6 +87,7 @@
     display: flex;
     background:#d8d8fd;
     border:4px solid #55a;
+    border-radius:0.7em;
     padding:.53rem;
     margin-top:1em;
 }
