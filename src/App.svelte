@@ -1,6 +1,7 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import Hub from './lib/Hub.svelte'
+  import { onMount } from 'svelte';
+  import svelteLogo from './assets/svelte.svg';
+  import Hub from './lib/Hub.svelte';
   
   // Obviously hardcoding Hue system config info here is bad idea. 
   // TODO:  obtain this from a persistent data store
@@ -20,9 +21,20 @@
   let hub1;
   let hub2;
   
-  function dumphub1()  {
-    hub1.dumpBulbStates();
+  let all_hubs = [hub1, hub2];  // ineffective here; good stuff happens in onMount()
+  
+  
+  async function turnAllOnOff(want)   {
+    for (let hub of all_hubs)  {
+        hub.turnAllOnOff(want);
+    }
   }
+  
+  
+  onMount(() => {
+    console.log("MOUNT ", hub1, hub2);
+    all_hubs = [hub1, hub2];
+  });
 </script>
 
 
@@ -30,9 +42,12 @@
 
     <Hub {...hub1_config_dsw}  bind:this={hub1}/>
     <Hub {...hub2_config_dsw}  bind:this={hub2}/>
-    
-    <button on:click={dumphub1}>Dump all bulb data in Hub1</button>
 
+    <div class="buttonbunch"> 
+        <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
+        <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+    </div>
+    
     <address>
     Source: <a href="https://github.com/darenw/WebPhue">WebPhue</a> at GitHub 
     <span style="margin-left:5em;" />
@@ -43,6 +58,19 @@
 </main>
 
 <style>
+
+.buttonbunch {
+    display: flex;
+    background:#d8d8fd;
+    border:4px solid #55a;
+    padding:.53rem;
+    margin-top:1em;
+}
+.bunchedbutton {
+    padding:.013em;
+    border:2px solid #448;
+    border-radius:6px;
+}
 
 address  {
     margin-top:2em;

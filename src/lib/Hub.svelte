@@ -23,6 +23,7 @@ export async function dumpBulbStates()   {
     return bulbjson;
 }
 
+
 export function dumpBulbStatesXXX()  {
   let bulbjson = "";
   fetch(url0 + "/lights")
@@ -47,7 +48,9 @@ export function setBulbOnOff(hib, want_on)  {
 }
 
 
-async function turnAllOnOff(want)   {
+
+
+export async function  turnAllOnOff(want)   {
     let bulbs = await dumpBulbStates();
     for (let ibulb in bulbs)  {
         setBulbOnOff(ibulb, want);
@@ -86,8 +89,8 @@ async function turnAllOnOff(want)   {
 }
 .hubbutton {
     padding:.013em;
-    
     border:2px solid #263;
+    border-radius:6px;
 }
 
 
