@@ -46,6 +46,12 @@
     }
   }
   
+  async function setAllBulbs(json)   {
+    for (let hub of all_hubs)   {
+        hub.setAllBulbs(json);
+    }
+  }
+  
   
   
   onMount(() => {
@@ -64,6 +70,7 @@
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
         <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":128} )  }>All orange</button></div>
     </div>
     
     
@@ -103,6 +110,11 @@ address  {
     background: #ccc;
 }
 
+textarea  {
+    width: 90%;
+    height: 8em;
+    margin-top:0.6rem;
+}
 
   .logo {
     height: 1.6em;

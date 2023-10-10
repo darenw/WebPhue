@@ -34,6 +34,7 @@ export function dumpBulbStatesXXX()  {
 }
 
 
+
 export function setBulbOnOff(hib, want_on)  {
   let url = url0 + "/lights/" + hib + "/state";
   let json = {"on": (want_on>0)? true : false};
@@ -46,8 +47,6 @@ export function setBulbOnOff(hib, want_on)  {
     .then( response => response.json() );
 }
 
-
-
 export async function  turnAllOnOff(want)   {
     let bulbs = await dumpBulbStates();
     for (let ibulb in bulbs)  {
@@ -55,6 +54,25 @@ export async function  turnAllOnOff(want)   {
     }
 }
 
+
+export function setBulb(hib, json)  {
+  let url = url0 + "/lights/" + hib + "/state";
+  const req = {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    };
+  fetch(url,  req)
+    .then( response => response.json() );
+}
+
+
+export async function  setAllBulbs(json)   {
+    let bulbs = await dumpBulbStates();
+    for (let ibulb in bulbs)  {
+        setBulb(ibulb, json);
+    }
+}
 
 </script>
 
@@ -67,6 +85,8 @@ export async function  turnAllOnOff(want)   {
     <div class="hubbutton"><button on:click={dumpBulbStates}>lights json</button></div>
     <div class="hubbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
     <div class="hubbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+    <div class="hubbutton"><button on:click={ () => setAllBulbs({"bri":8,"hue":45000,"sat":220}) }>Dim Blue</button></div>
+    <div class="hubbutton"><button on:click={ () => setAllBulbs({"bri":252,"hue":7000,"sat":20}) }>Bright</button></div>
 </div>
 </div>
 
