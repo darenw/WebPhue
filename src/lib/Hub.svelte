@@ -1,3 +1,6 @@
+<svelte:options accessors />
+
+
 <script>
 export let name = "unnamed";
 export let ipaddr = "192.168.x.x";
@@ -18,7 +21,7 @@ function urlForBulb(hib)  {
 export async function dumpBulbStates()   {
     const reply = await fetch(url0 + "/lights");
     const bulbjson = await reply.json();
-    console.log(bulbjson);
+    console.log("DUMP ", name, " lights: ",  bulbjson);
     return bulbjson;
 }
 
@@ -81,12 +84,12 @@ export async function  setAllBulbs(json)   {
 <p>Hub {name} at {ipaddr}</p>
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
-<div class="buttonbar">
-    <div class="hubbutton"><button on:click={dumpBulbStates}>lights json</button></div>
-    <div class="hubbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
-    <div class="hubbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
-    <div class="hubbutton"><button on:click={ () => setAllBulbs({"bri":8,"hue":45000,"sat":220}) }>Dim Blue</button></div>
-    <div class="hubbutton"><button on:click={ () => setAllBulbs({"bri":252,"hue":7000,"sat":20}) }>Bright</button></div>
+<div class="buttonbunch">
+    <div class="bunchedbutton"><button on:click={dumpBulbStates}>lights json</button></div>
+    <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
+    <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+    <div class="bunchedbutton"><button on:click={ () => setAllBulbs({"bri":8,"hue":45000,"sat":220}) }>Dim Blue</button></div>
+    <div class="bunchedbutton"><button on:click={ () => setAllBulbs({"bri":252,"hue":7000,"sat":20}) }>Bright</button></div>
 </div>
 </div>
 
@@ -102,10 +105,10 @@ export async function  setAllBulbs(json)   {
     text-align: center;
 }
 
-.buttonbar {
+.buttonbunch {
     display: flex;
 }
-.hubbutton {
+.bunchedbutton {
     padding:.013em;
     border:2px solid #263;
     border-radius:6px;

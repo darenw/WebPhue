@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import svelteLogo from './assets/svelte.svg';
   import Hub from './lib/Hub.svelte';
+  import Bulb from './lib/Bulb.svelte';
   
   // Obviously hardcoding Hue system config info here is bad idea. 
   // TODO:  obtain this from a persistent data store
@@ -12,7 +13,7 @@
   }
   
   const hub2_config_dsw = { 
-        name: "Hub1",
+        name: "Hub2",
         ipaddr: "192.168.1.9",
         key: "cTiCCIRzOjL1mNuoN1ndDwaQhFSlpsojUIfjKT-u"
   }
@@ -30,9 +31,6 @@
     let dt = "";
     for (let hub of all_hubs)   {
         let jsonx = await hub.dumpBulbStates();
-        console.log(hub);
-        console.log(jsonx);
-        console.log("  - ");
         dt +=  JSON.stringify( jsonx );
     }
     textdump = dt;
@@ -54,23 +52,71 @@
   
   
   
+  // Analyze the JSON from hub's .../lights, 
+  // return array of bulb definitions:  hub's id for bulb, 
+  function parseLightsJson(json)   {
+  }
+  
+  let all_bulbdefs = [];  
+  
+  
+  
+  async function makeBulbCardsForHub(hub)   {
+    console.log("Making cards for all bulbs of hub ", hub.name);
+    let allbulbinfo = await hub.dumpBulbStates();
+    console.log(allbulbinfo);
+    let bb = document.getElementById("thebulbcards");
+    for (let b in allbulbinfo)  {
+        //console.log("B in bulbinfo ", b, " & ", allbulbinfo[b]);
+        let bulb = allbulbinfo[b];
+        new Bulb( { target:bb, props:{
+                myhub:hub, 
+                hib:b, 
+                unique_id:bulb.uniqueid,
+                model:bulb.modelid,
+                name: hub.name + ':' + b
+        } } );
+    }
+  }
+  
+  
+  
+  
   onMount(() => {
     console.log("MOUNT ", hub1, hub2);
     all_hubs = [hub1, hub2];
+    makeBulbCardsForHub(hub1);
+    makeBulbCardsForHub(hub2);    
   });
+  
+  
+const stupid_bulb_info = { name: "Foo McFoo", key: "ditz" };
 </script>
 
 
 <main>
+    <div class="overall">
 
+    <div class="bunchastuff">
     <Hub {...hub1_config_dsw}  bind:this={hub1}/>
     <Hub {...hub2_config_dsw}  bind:this={hub2}/>
+    </div>
+    
+    <div class="bunchastuff">
+    <div class="bulbcards" id="thebulbcards">
+    <!-- <Bulb  hib=9876 myhub={stupid_bulb_info} /> -->
+    </div>
+    </div>
 
+    
+    
+    </div>
+    
     <div class="buttonbunch"> 
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
         <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":128} )  }>All orange</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>All orange</button></div>
     </div>
     
     
@@ -100,9 +146,15 @@
 }
 .bunchedbutton {
     padding:.013em;
+    margin:2px;
     border:2px solid #448;
     border-radius:6px;
 }
+
+.overall {
+    display:flex;
+}
+
 
 address  {
     margin-top:2em;
