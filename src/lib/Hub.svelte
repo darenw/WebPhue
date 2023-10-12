@@ -26,17 +26,6 @@ export async function dumpBulbStates()   {
 }
 
 
-export function dumpBulbStatesXXX()  {
-  let bulbjson = "";
-  fetch(url0 + "/lights")
-    .then( response => response.json() )
-    .then( data => bulbjson = (data) )
-    .catch( error => console.error(error) );
-  console.log(bulbjson);
-  return bulbjson;
-}
-
-
 
 export function setBulbOnOff(hib, want_on)  {
   let url = url0 + "/lights/" + hib + "/state";

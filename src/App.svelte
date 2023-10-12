@@ -3,29 +3,17 @@
   import svelteLogo from './assets/svelte.svg';
   import Hub from './lib/Hub.svelte';
   import Bulb from './lib/Bulb.svelte';
-  
-  // Obviously hardcoding Hue system config info here is bad idea. 
-  // TODO:  obtain this from a persistent data store
-  const hub1_config_dsw = { 
-        name: "Hub1",
-        ipaddr: "192.168.1.85",
-        key: "2SauenjyuxCMB2rHKSFxp06oZGtNhEy4OiCuQel8"
-  }
-  
-  const hub2_config_dsw = { 
-        name: "Hub2",
-        ipaddr: "192.168.1.9",
-        key: "cTiCCIRzOjL1mNuoN1ndDwaQhFSlpsojUIfjKT-u"
-  }
+  import {bulb_associated_names, 
+          hub_associated_names,
+          hub_ip_addresses
+          }   from './BulbAssignments';
   
   
-  let hub1;
-  let hub2;
-  
-  let all_hubs = [hub1, hub2];  // ineffective here; good stuff happens in onMount()
-
   
   let textdump="";
+  
+  let all_hubs = [];
+  
   
   async function dumpAllLights()  {
     let dt = "";
@@ -52,41 +40,54 @@
   
   
   
-  // Analyze the JSON from hub's .../lights, 
-  // return array of bulb definitions:  hub's id for bulb, 
-  function parseLightsJson(json)   {
-  }
-  
-  let all_bulbdefs = [];  
-  
-  
-  
   async function makeBulbCardsForHub(hub)   {
     console.log("Making cards for all bulbs of hub ", hub.name);
-    let allbulbinfo = await hub.dumpBulbStates();
+    let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
     console.log(allbulbinfo);
-    let bb = document.getElementById("thebulbcards");
+    let bb = document.getElementById("bulbcards");
     for (let b in allbulbinfo)  {
-        //console.log("B in bulbinfo ", b, " & ", allbulbinfo[b]);
         let bulb = allbulbinfo[b];
+        const buid = bulb.uniqueid;
+        console.log("BUID ", buid);
+        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
+        console.log("For ", bulb.uniqueid, " found ", z);
+        let found_name = (z)? z.name :  hub.name + ':' + b;
         new Bulb( { target:bb, props:{
                 myhub:hub, 
                 hib:b, 
                 unique_id:bulb.uniqueid,
                 model:bulb.modelid,
-                name: hub.name + ':' + b
-        } } );
+                name: found_name
+        }});
     }
   }
   
   
-  
+  async function makeHubCards()  {
+    console.log("Making HUB CARDS  ");
+    let hh = document.getElementById("hubcards");
+    for (let ip of hub_ip_addresses)  {
+        console.log("making hub for ", ip);
+        let url =  "http://" + ip + "/api/config";
+        const reply = await fetch(url);
+        const conf =  await reply.json();
+        const mac = conf.mac;
+        let hinfo = hub_associated_names.find( (a) => mac === a.mac );
+        let hub = new Hub( { target:hh, props:{
+            name: conf.name,
+            key: hinfo.key,
+            mac: conf.mac,
+            ipaddr: ip
+        }});
+        all_hubs.push(hub);
+        makeBulbCardsForHub(hub);
+    }
+  }
   
   onMount(() => {
-    console.log("MOUNT ", hub1, hub2);
-    all_hubs = [hub1, hub2];
-    makeBulbCardsForHub(hub1);
-    makeBulbCardsForHub(hub2);    
+    console.log("MOUNT ");
+    makeHubCards();
+//    makeBulbCardsForHub(hub1);
   });
   
   
@@ -97,18 +98,11 @@ const stupid_bulb_info = { name: "Foo McFoo", key: "ditz" };
 <main>
     <div class="overall">
 
-    <div class="bunchastuff">
-    <Hub {...hub1_config_dsw}  bind:this={hub1}/>
-    <Hub {...hub2_config_dsw}  bind:this={hub2}/>
+    <div class="bunchastuff" id="hubcards">
     </div>
     
-    <div class="bunchastuff">
-    <div class="bulbcards" id="thebulbcards">
-    <!-- <Bulb  hib=9876 myhub={stupid_bulb_info} /> -->
+    <div class="bunchastuff" id="bulbcards">
     </div>
-    </div>
-
-    
     
     </div>
     
