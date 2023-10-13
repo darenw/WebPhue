@@ -2,6 +2,8 @@
 
 
 <script>
+import TinyColorButtons  from './TinyColorButtons.svelte';
+
 export let name = "unnamed";
 export let ipaddr = "192.168.x.x";
 export let mac = "00:00:00:00:00:00";
@@ -66,6 +68,10 @@ export async function  setAllBulbs(json)   {
     }
 }
 
+function tinyColorChosen(ev)  {
+    setAllBulbs(ev.detail.json);
+}
+
 </script>
 
 
@@ -74,11 +80,12 @@ export async function  setAllBulbs(json)   {
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click={dumpBulbStates}>lights json</button></div>
     <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
     <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
-    <div class="bunchedbutton"><button on:click={ () => setAllBulbs({"bri":8,"hue":45000,"sat":220}) }>Dim Blue</button></div>
-    <div class="bunchedbutton"><button on:click={ () => setAllBulbs({"bri":252,"hue":7000,"sat":20}) }>Bright</button></div>
+    <TinyColorButtons 
+        on:color_chosen={tinyColorChosen} 
+        />
+
 </div>
 </div>
 

@@ -3,11 +3,14 @@
 
 <script>
 
+import TinyColorButtons  from './TinyColorButtons.svelte';
+
 export let name = "unnamed";
-export let myhub;   
-export let hib=-1;
+export let myhub;           // ref to a Hub component created in App
+export let hib=-1;          // hub's id number for this bulb, used like in .../lights/25/state
 export let model;
 export let unique_id = "";
+
 
 
 function turnOnOff(want)  {
@@ -22,6 +25,18 @@ function setjson(json)  {
         myhub.setBulb(hib, json);
     }
 }
+
+function tinyColorChosen(ev)  {
+    //console.log("BULB hears TinyColor message!  ", ev.detail);
+    setjson(ev.detail.json);
+}
+
+let colorhover="";
+function tinyColorHovering(ev)  {
+    //console.log("BULB hears TinyColor message!  ", ev.detail);
+    colorhover = ev.detail.name;
+}
+
 </script>
 
 
@@ -29,6 +44,14 @@ function setjson(json)  {
 <div class="whole">
 <p><b>{name}</b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
 <p><span class="pale">{unique_id}</span></p>
+<div class="tinybuttonbox">
+<TinyColorButtons 
+        on:color_chosen={tinyColorChosen} 
+        on:color_hover={tinyColorHovering} 
+        on:mouseout={ (ev) => {colorhover="  "} }
+        />
+<p>{colorhover}</p>
+</div>
 
 <div class="buttonbunch">
     <div class="bunchedbutton"><button on:click={ () => turnOnOff(1) } >ON</button></div>
@@ -47,7 +70,7 @@ function setjson(json)  {
     border: #773 solid 5px;  
     border-radius:0.7em; 
     background:#fffad9;
-    padding: .2rem;
+    padding: .3rem;
     margin:2px;
     width:25rem;
     text-align: center;
@@ -56,6 +79,10 @@ function setjson(json)  {
 p {
     padding:0;
     margin:0;
+}
+
+div.tinybuttonbox {
+    
 }
 
 button { margin:0; }
