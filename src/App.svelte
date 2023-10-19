@@ -76,7 +76,6 @@
   async function makeBulbCardsForHub(hub)   {
     console.log("Making cards for all bulbs of hub ", hub.name);
     let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
-    console.log(allbulbinfo);
     let bb = document.getElementById("bulbcards");
     for (let b in allbulbinfo)  {
         let bulb = allbulbinfo[b];
@@ -98,7 +97,6 @@
   
   
   async function makeHubCards()  {
-    console.log("Making HUB CARDS  ");
     let hh = document.getElementById("hubcards");
     for (let ip of hub_ip_addresses)  {
         console.log("making hub for ", ip);
@@ -119,7 +117,6 @@
   }
   
   onMount(() => {
-    console.log("MOUNT ");
     makeHubCards();
 //    makeBulbCardsForHub(hub1);
   });

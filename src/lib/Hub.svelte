@@ -23,7 +23,6 @@ function urlForBulb(hib)  {
 export async function dumpBulbStates()   {
     const reply = await fetch(url0 + "/lights");
     const bulbjson = await reply.json();
-    console.log("DUMP ", name, " lights: ",  bulbjson);
     return bulbjson;
 }
 

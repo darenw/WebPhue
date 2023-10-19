@@ -26,8 +26,8 @@ export const hub_associated_names = [
 export const bulb_associated_names = [
     { hwid:"65:b6:1e", hub:"Hub2", hib:2, name:"Desk1" },
     { hwid:"ad:88:c5", hub:"Hub2", hib:1, name:"Underdesk" },
+    { hwid:"b1:af:d4", hub:"Hub2", hib:3, name:"BooksRight" },
     { hwid:"67:9c:1c", hub:"Hub1", hib:6, name:"BooksLeft" },
-    { hwid:"0d:b1:af", hub:"Hub2", hib:3, name:"BooksRight" },
     { hwid:"54:9b:8b", hub:"Hub1", hib:1, name:"Hydra1" },
     { hwid:"b2:31:0f", hub:"Hub1", hib:2, name:"Hydra2" },
     { hwid:"b1:af:42", hub:"Hub1", hib:7, name:"Hydra3" },
