@@ -1,8 +1,11 @@
 <script>
   import { onMount } from 'svelte';
   import svelteLogo from './assets/svelte.svg';
+
   import Hub from './lib/Hub.svelte';
   import Bulb from './lib/Bulb.svelte';
+  import TinyColorButtons  from './lib/TinyColorButtons.svelte';
+
   import {bulb_associated_names, 
           hub_associated_names,
           hub_ip_addresses
@@ -13,7 +16,7 @@
   let textdump="";
   
   let all_hubs = [];
-  
+  let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
   
   async function dumpAllLights()  {
     let dt = "";
@@ -39,6 +42,36 @@
   }
   
   
+  function setSelectionAll(want)  {
+    for (let b of all_bulbs)   {
+        b.selected = want;
+    }
+  }
+  
+  
+  async function setSelBulbs(json)  {
+    console.log("set selected   json=", json);
+    for (let b of all_bulbs)   {
+        console.log("SetSelBulbs: is ", b, " selected?",  b.selected);
+        if (b.selected)  {
+            b.setjson(json);
+        }
+    }
+  }
+  
+
+  function tinyColorChosenSelected(ev) {
+    setSelBulbs(ev.detail.json);
+  }
+  
+  function checkAllAvail()   {
+    for (let b of all_bulbs)   {
+        b.checkAvail();
+    }
+  }
+
+
+  
   
   async function makeBulbCardsForHub(hub)   {
     console.log("Making cards for all bulbs of hub ", hub.name);
@@ -48,17 +81,18 @@
     for (let b in allbulbinfo)  {
         let bulb = allbulbinfo[b];
         const buid = bulb.uniqueid;
-        console.log("BUID ", buid);
         let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
-        console.log("For ", bulb.uniqueid, " found ", z);
         let found_name = (z)? z.name :  hub.name + ':' + b;
-        new Bulb( { target:bb, props:{
+        let avail = bulb.state.reachable;
+        let newb = new Bulb( { target:bb, props:{
                 myhub:hub, 
                 hib:b, 
                 unique_id:bulb.uniqueid,
                 model:bulb.modelid,
-                name: found_name
+                name: found_name,
+                available: avail
         }});
+        all_bulbs.push(newb);
     }
   }
   
@@ -74,7 +108,7 @@
         const mac = conf.mac;
         let hinfo = hub_associated_names.find( (a) => mac === a.mac );
         let hub = new Hub( { target:hh, props:{
-            name: conf.name,
+            name: hinfo.name,
             key: hinfo.key,
             mac: conf.mac,
             ipaddr: ip
@@ -91,27 +125,44 @@
   });
   
   
-const stupid_bulb_info = { name: "Foo McFoo", key: "ditz" };
 </script>
+
+
 
 
 <main>
     <div class="overall">
 
-    <div class="bunchastuff" id="hubcards">
+    <div class="cardstack" id="hubcards">
+      <!-- ALL HUB CARDS GO HERE -->
     </div>
     
-    <div class="bunchastuff" id="bulbcards">
+    <div class="cardstack" id="bulbcards">
+      <!-- ALL BULB CARDS GO HERE -->
     </div>
     
     </div>
     
-    <div class="buttonbunch"> 
+    <fieldset class="buttonbunch">
+        <legend>Selected Bulbs</legend>
+        <div class="bunchedbutton"><button on:click={ () => setSelectionAll(true)}>All</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setSelectionAll(false)}>None</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"on":false} )}>Off</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"on":true} )} >ON</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"bri":160,"hue":1811,"sat":208})  }>red</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"bri":200,"hue":29111,"sat":158})  }>green</button></div>
+        <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
+    </fieldset>
+
+    <fieldset class="buttonbunch"> 
+        <legend>All Bulbs</legend>
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
         <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
         <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>All orange</button></div>
-    </div>
+        <div class="bunchedbutton"><button on:click={ checkAllAvail }>Avail?</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button></div>
+    </fieldset>
     
     
     <div class="dumpzone">
@@ -128,7 +179,16 @@ const stupid_bulb_info = { name: "Foo McFoo", key: "ditz" };
     
 </main>
 
+
+
+
 <style>
+.cardstack {
+    display: flex;
+    flex-direction: column;
+    /*border:1px #777 dotted;*/
+    padding:2px;
+}
 
 .buttonbunch {
     display: flex;

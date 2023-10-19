@@ -1,54 +1,60 @@
 # WebPhue
 
-An attempt at a webapp for controlling Philips Hue bulbs
+A webapp for controlling Philips Hue bulbs
 
-My previous project for controlling Hue bulbs was command line. It does the job, but is limited in what 
-it can do, and the user has to remember the commands.  What about a slick UI with drag-and-drop, click on icons
-and color pickers, and using Svelte?
-
-WORK IN PROGRESS!
+WORK IN PROGRESS! May be buggy. 
 
 ## Build
 
-This web app is build using Yarn, Vite, Svelte. After editing, run 
+This web app is build using Yarn, Vite, Svelte. Run yarn's http server
 
     yarn run dev    
 
-The WebPhue app should appear in any browser viewing localhost:8842  (or any other port you may set in package.json)  
-The web app should also work fine on any mobile device set to http://_your dev machine ip addr_:8842.
+then edit. Saving source should cause automatic refreshing of the web app in the browser.
+
+The WebPhue app should work in any browser set to localhost:8842   Use any other port number by editing package.json.
+The web app should also work fine on any mobile device set to http://{your dev machine's ip addr}:8842.
 
 
 ## Usage
 
-Before using, in the likely event that you are not me, alter the hub (Hue Bridge) config info in the <script> of App.svelte. 
-Change the all_hubs assignment in onMount() to match the number of hubs actually in use. 
-A future version of WebPhue will auto-detect hubs or get their config data from some persistent storage.
+WebPhue looks at the IP addresses listed in BulbAssignments.js for Hue bridges, what I call "hubs".
+From each hub a list of bulbs is fetched. BulbAssignments.js gives names for bulbs associated with 
+their MAC addresses. 
 
-Each Hub (aka Bridge) in the system shows as a green box with its IP address and other info. Buttons
-allow the user to turn on all lights, turn them all off, and other things depending on the version.
+A future version of WebPhue will auto-detect hubs or get their config data from some persistent storage. For now, 
+user must edit BulbAssignments.js
 
-A blue bar with buttons lets you turn off  or turn on all the bulbs in the system, of all hubs 
-known to WebPhue.
+Each Hub (aka Bridge) in the system shows as a green box with its user-defined name, IP address and other info. Buttons
+allow the user to turn on all lights, turn them all off, and do a few other things depending on the version of WebPhue.
+
+Every light bulb known to every hub is shown in a yellow box, with the bulb's name, the hub its controlled by,
+"unique id" and other info, and buttons to turn it on/off and set colors.  The small grid of colored squares
+gives a bunch of predefined colors. Larger regular buttons may also exist for setting colors. 
+
+Clicking on a Bulb's box turns it light blue (as of this writing). This means the Bulb is "selected".
+Selected bulbs may be dealt with all at once as a group. At the bottom of the web page, 
+a blue-violet horizontal bar offers buttons to set colors and turn on/off all the selected bulbs.
+
+If there's an "avail?" button, in the Bulb boxes or in the Selected bar, 
+that is to tell the hub to look again for bulbs that weren't responding, 
+for example if they've been removed or physically turned off at the lighting fixture. 
+Their boxes are gray not yellow.
+This feature is buggy for now: An unreachable bulb may appear to resolve ok, but it's still unreachable in reality.
 
 
-The "lights json" appears to do nothing. What it does is send info about all bulbs known to a hub to console.log(). 
-Enable your browser's developer tools to see this.
-
-Every light bulb known to a hub is shown in a yellow box.  These are requested from the hub every time
-the web app is started or reloaded. Each yellow box has a name for the bulb (braindead atm), its 
-"unique id" which I think has to do with Zigbee, how it's known to a hub, and buttons to turn it on/off, 
-set certain hardcoded colors, and who knows what else depending on the version. 
 
 
 
 ## To Be Done:
-
-* Define tiny color buttons to put into Bulbs so there's a larger number of hardcoded colors that work apart from any higher level color scene mechanisms.
+* handle case of no nework to hubs, eg pulled eth cable - got bad page, cryptic errmsg
 * Gather more info from hubs about each bulb. Keep it in each bulb's component. Make a button or something to pop up the whole mess for viewing.
+    (firmware update, colorgamut, mfr name, ...)
 * Define a ColorPatch component. Click to adjust color. Drag to a bulb to set its color.
 * Define a ColorPalette to hold any number of ColorPatches, and give them names.
-* hardcoded bridge IP and ID - obviously won't work for non-me people! Also, hardcoded to use two not arbitrary number of bridges.
-* If lights are off, then setAllBulbs( json with new color ), then lights are turned on, they show old color. Would like new color to show w/o re-do setting color state.
+* re-order Bulb cards.  draggable?  
+* Put hub ipaddr, keys, bulb names & MACs into some sort of persistent storage. Now is in BulbAssignments.js
+* if a bulb is off (as sw state, not physically), color button, turned on, comes up w previous color. Makes sense for new color to show?
 * UI will be ugly for a while. Emphasis for short term is functionality, advanced automation.
 
 

@@ -24,16 +24,16 @@ export const hub_associated_names = [
 
 
 export const bulb_associated_names = [
+    { hwid:"65:b6:1e", hub:"Hub2", hib:2, name:"Desk1" },
+    { hwid:"ad:88:c5", hub:"Hub2", hib:1, name:"Underdesk" },
+    { hwid:"67:9c:1c", hub:"Hub1", hib:6, name:"BooksLeft" },
+    { hwid:"0d:b1:af", hub:"Hub2", hib:3, name:"BooksRight" },
     { hwid:"54:9b:8b", hub:"Hub1", hib:1, name:"Hydra1" },
     { hwid:"b2:31:0f", hub:"Hub1", hib:2, name:"Hydra2" },
-    { hwid:"7c:e9:70", hub:"Hub1", hib:3, name:"Hydra5" },
-    { hwid:"ed:9b:b8", hub:"Hub1", hib:4, name:"Hydra4" },
-    { hwid:"f2:61:5a", hub:"Hub1", hib:5, name:"BedPole1" },
-    { hwid:"67:9c:1c", hub:"Hub1", hib:6, name:"BooksLeft" },
     { hwid:"b1:af:42", hub:"Hub1", hib:7, name:"Hydra3" },
-    { hwid:"ad:88:c5", hub:"Hub2", hib:1, name:"Underdesk" },
-    { hwid:"65:b6:1e", hub:"Hub2", hib:2, name:"Desk1" },
-    { hwid:"0d:b1:af", hub:"Hub2", hib:3, name:"BooksRight" }
+    { hwid:"ed:9b:b8", hub:"Hub1", hib:4, name:"Hydra4" },
+    { hwid:"7c:e9:70", hub:"Hub1", hib:3, name:"Hydra5" },
+    { hwid:"f2:61:5a", hub:"Hub1", hib:5, name:"BedPole1" }
     
 ];
 

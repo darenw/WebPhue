@@ -49,6 +49,17 @@ export async function  turnAllOnOff(want)   {
 }
 
 
+export async function checkAvailOfBulbByIndex(hib)    {
+    let url = url0 + "/lights/" + hib + "/state";
+    console.log("Hub ", name, "  checking reachability bulbid ", hib);
+    const reply = await fetch(url);
+    const json = await reply.json();
+    console.log("   >> ", json);
+    return json.reachable;
+}
+
+
+
 export function setBulb(hib, json)  {
   let url = url0 + "/lights/" + hib + "/state";
   const req = {
@@ -75,19 +86,20 @@ function tinyColorChosen(ev)  {
 </script>
 
 
-<div class="whole">
-<p>Hub {name} at {ipaddr}</p>
+<fieldset class="whole">
+<legend>Hue Bridge</legend>
+<p>{name} at {ipaddr}</p>
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All OFF</button></div>
-    <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnAllOnOff(0) }>All OFF</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnAllOnOff(1) }>All ON</button></div>
     <TinyColorButtons 
         on:color_chosen={tinyColorChosen} 
         />
 
 </div>
-</div>
+</fieldset>
 
 
 <style>

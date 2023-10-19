@@ -49,9 +49,6 @@ function onCanvasFocus(ev) {
 
 
 function clickColor(ev, justmoving)   {
-    if (!justmoving) {
-      console.log(ev.offsetX, ev.offsetY);
-    }
     let ix = Math.floor( ev.offsetX / tinybutsize );
     let iy = Math.floor( ev.offsetY / tinybutsize );
     if (!justmoving) {
@@ -110,7 +107,7 @@ onMount( () => {
     on:focus={onCanvasFocus}
     on:blur={onCanvasBlur}
     on:mousemove={ (ev) => clickColor(ev,true) }
-    on:click={ (ev) => clickColor(ev,false) }
+    on:click|stopPropagation={ (ev) => clickColor(ev,false) }
     on:mouseout={emitMouseOut}
     />
 </div>
