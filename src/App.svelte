@@ -17,6 +17,12 @@
   
   let all_hubs = [];
   let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
+  let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
+  
+  
+  function order_experiment() {
+    /* ? */
+  }
   
   async function dumpAllLights()  {
     let dt = "";
@@ -71,32 +77,9 @@
   }
 
 
-  
-  
-  async function makeBulbCardsForHub(hub)   {
-    console.log("Making cards for all bulbs of hub ", hub.name);
-    let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
-    let bb = document.getElementById("bulbcards");
-    for (let b in allbulbinfo)  {
-        let bulb = allbulbinfo[b];
-        const buid = bulb.uniqueid;
-        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
-        let found_name = (z)? z.name :  hub.name + ':' + b;
-        let avail = bulb.state.reachable;
-        let newb = new Bulb( { target:bb, props:{
-                myhub:hub, 
-                hib:b, 
-                unique_id:bulb.uniqueid,
-                model:bulb.modelid,
-                name: found_name,
-                available: avail
-        }});
-        all_bulbs.push(newb);
-    }
-  }
-  
-  
+
   async function makeHubCards()  {
+    console.log("Fetching Hub info, making Hub Cards");
     let hh = document.getElementById("hubcards");
     for (let ip of hub_ip_addresses)  {
         console.log("making hub for ", ip);
@@ -112,13 +95,62 @@
             ipaddr: ip
         }});
         all_hubs.push(hub);
-        makeBulbCardsForHub(hub);
     }
+    console.log("Done making hubs");
   }
   
+  
+  
+  async function makeBulbCardDefinitionsForHub(hub)   {
+    console.log("Making cards for all bulbs of hub ", hub.name);
+    let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
+    let defs =[];
+    for (let b in allbulbinfo)  {
+        let bulb = allbulbinfo[b];
+        const buid = bulb.uniqueid;
+        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
+        let found_name = (z)? z.name :  hub.name + ':' + b;
+        let avail = bulb.state.reachable;
+        let bulb_props ={
+                myhub:hub, 
+                hib:b, 
+                unique_id:bulb.uniqueid,
+                model:bulb.modelid,
+                name: found_name,
+                available: avail
+        };
+        console.log(" $$ ", bulb_props);
+        defs.push(bulb_props);
+    }
+    return defs;
+  }
+
+
+
+  async function createAllCards()  {
+    
+    await makeHubCards();
+    
+    // Get bulb info from _all_ hubs first before trying to sort them
+    let bulbdefs = []
+    for (let hub of all_hubs)  {
+        let new_defs = await makeBulbCardDefinitionsForHub(hub);
+        console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
+        bulbdefs.push(...new_defs);
+    }
+    bulbdefs.sort( (a,b) => a.name.localeCompare(b.name) );
+    
+    let bulbcards = document.getElementById("bulbcards");
+    for (let bdef of bulbdefs)  {
+        let newb = new Bulb({target: bulbcards,  props: bdef});
+        console.log("Made ",  newb.name);
+        all_bulbs.push(newb);
+    }
+  }  
+
+
   onMount(() => {
-    makeHubCards();
-//    makeBulbCardsForHub(hub1);
+    createAllCards();
   });
   
   
@@ -134,11 +166,13 @@
       <!-- ALL HUB CARDS GO HERE -->
     </div>
     
-    <div class="cardstack" id="bulbcards">
+    <div class="cardstack" id="bulbcards" bind:this={bulbcardsbox}>
       <!-- ALL BULB CARDS GO HERE -->
     </div>
     
     </div>
+    
+    <button on:click={order_experiment}>ORDER</button>
     
     <fieldset class="buttonbunch">
         <legend>Selected Bulbs</legend>
@@ -161,10 +195,6 @@
         <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button></div>
     </fieldset>
     
-    
-    <div class="dumpzone">
-    <textarea bind:value={textdump}></textarea>
-    </div>
     
     
     <address>
