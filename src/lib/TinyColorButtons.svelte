@@ -11,8 +11,8 @@ const hardcoded_colors = [
     [ 
         { name:"DimBlue",  hexrgb:"#181876",  json:{bri: 12, sat:239, hue:45000 }},
         { name:"vivid magenta",  hexrgb:"#f812c6",  json:{bri: 62, sat:255, hue:61000 }},
-        { name:"Yellow",   hexrgb:"#fcfc44",  json:{bri: 250, sat:241, hue:9510 }},
-        { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 250, sat:2, hue:1000 }},
+        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }},
+        { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 248, sat:5, hue:1500 }},
         { name:"MidWhite", hexrgb:"#bcbcbc",  json:{bri: 110, sat:2, hue:10 }}
     ],
     [ 
@@ -51,13 +51,8 @@ function onCanvasFocus(ev) {
 function clickColor(ev, justmoving)   {
     let ix = Math.floor( ev.offsetX / tinybutsize );
     let iy = Math.floor( ev.offsetY / tinybutsize );
-    if (!justmoving) {
-      console.log("click ", ev.offsetX, ev.offsetY, "   cell index ", ix, iy,  "    grid: ", ncols, nrows); 
-    }
     if (ix<0 || ix>=ncols || iy<0 || iy>=nrows) return;
-    //console.log("deemed okay.  z = ", hardcoded_colors[iy][ix]);
     let z = hardcoded_colors[iy][ix];
-    console.log("z keys:  ", Object.keys(z),  "  json=", z.json );
     chosen_color_json = z.json;
     dispatch( (justmoving)? 'color_hover' : 'color_chosen',   {
         json: chosen_color_json,
