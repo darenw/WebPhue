@@ -28,26 +28,6 @@ export async function dumpBulbStates()   {
 
 
 
-export function setBulbOnOff(hib, want_on)  {
-  let url = url0 + "/lights/" + hib + "/state";
-  let json = {"on": (want_on>0)? true : false};
-  const req = {
-        method: "PUT",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-    };
-  fetch(url,  req)
-    .then( response => response.json() );
-}
-
-export async function  turnAllOnOff(want)   {
-    let bulbs = await dumpBulbStates();
-    for (let ibulb in bulbs)  {
-        setBulbOnOff(ibulb, want);
-    }
-}
-
-
 export async function checkAvailOfBulbByIndex(hib)    {
     let url = url0 + "/lights/" + hib + "/state";
     console.log("Hub ", name, "  checking reachability bulbid ", hib);
@@ -91,8 +71,8 @@ function tinyColorChosen(ev)  {
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnAllOnOff(0) }>All OFF</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnAllOnOff(1) }>All ON</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>All OFF</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>All ON</button></div>
     <TinyColorButtons 
         on:color_chosen={tinyColorChosen} 
         />

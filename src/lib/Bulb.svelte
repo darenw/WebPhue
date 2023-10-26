@@ -28,12 +28,6 @@ export async function checkAvail()  {
     }
 }
 
-function turnOnOff(want)  {
-    if (myhub)  {
-        myhub.setBulbOnOff(hib,want);
-    }
-}
-
 export function setjson(json)  {
     if (myhub)  {
         myhub.setBulb(hib, json);
@@ -84,8 +78,8 @@ function selectionClick(ev)  {
 </div>
 
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnOnOff(1) } >ON</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => turnOnOff(0) } >Off</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({on:true}) } >ON</button></div>
+    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({on:false}) } >Off</button></div>
     <div class="bunchedbutton"><button on:click|stopPropagation={ checkAvail } >avail?</button></div>
     <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button></div>
     <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button></div>   

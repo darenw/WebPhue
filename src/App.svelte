@@ -35,11 +35,6 @@
   
   
   
-  async function turnAllOnOff(want)   {
-    for (let hub of all_hubs)  {
-        hub.turnAllOnOff(want); 
-    }
-  }
   
   async function setAllBulbs(json)   {
     for (let hub of all_hubs)   {
@@ -187,8 +182,8 @@
 
     <fieldset class="buttonbunch"> 
         <legend>All Bulbs</legend>
-        <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(0) }>All Off</button></div>
-        <div class="bunchedbutton"><button on:click={ () => turnAllOnOff(1) }>All ON</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs({on:false}) }>All Off</button></div>
+        <div class="bunchedbutton"><button on:click={ () => setAllBulbs({on:true}) }>All ON</button></div>
         <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
         <div class="bunchedbutton"><button on:click={ checkAllAvail }>Avail?</button></div>
         <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button></div>
