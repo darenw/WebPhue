@@ -62,7 +62,7 @@ function selectionClick(ev)  {
 <fieldset class="whole" 
         class:selected={selected} 
         class:deadbulb={!available} 
-        draggable={true} 
+        draggable={false} 
         on:click={selectionClick}
 >
 <legend>Bulb</legend>
@@ -78,11 +78,11 @@ function selectionClick(ev)  {
 </div>
 
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({on:true}) } >ON</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({on:false}) } >Off</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ checkAvail } >avail?</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button></div>   
+    <button on:click|stopPropagation={ () => setjson({on:true}) } >ON</button>
+    <button on:click|stopPropagation={ () => setjson({on:false}) } >Off</button>
+    <button on:click|stopPropagation={ checkAvail } >avail?</button>
+    <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button>
+    <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
 </div>
 
 </fieldset><!-- class whole -->
@@ -96,11 +96,11 @@ function selectionClick(ev)  {
     background:#fffad9;
     padding: .3rem;
     margin:2px;
-    width:25rem;
-    height:7rem;
+    width:23rem; 
     resize:none;
     text-align: center;
     cursor:move;
+    display: inline;
 }
 
 .whole.over { border:dotted 5px #aa6; }
@@ -124,10 +124,9 @@ button { margin:0; }
 .pale { color:#663; font-size:.8em; }
 
 .buttonbunch {
-    display: flex;
+/*    display: flex;*/
 }
-.bunchedbutton {
-    padding:.013em;
+.buttonbunch button {
     border:2px solid #263;
     border-radius:6px;
     font-size:0.7em;

@@ -71,8 +71,8 @@ function tinyColorChosen(ev)  {
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
 <div class="buttonbunch">
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>All OFF</button></div>
-    <div class="bunchedbutton"><button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>All ON</button></div>
+    <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>All OFF</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>All ON</button>
     <TinyColorButtons 
         on:color_chosen={tinyColorChosen} 
         />
@@ -90,13 +90,13 @@ function tinyColorChosen(ev)  {
     margin:2px;
     width:25rem;
     text-align: center;
+    display: inline;
 }
 
 .buttonbunch {
     display: flex;
 }
-.bunchedbutton {
-    padding:.013em;
+.buttonbunch button {
     border:2px solid #263;
     border-radius:6px;
 }

@@ -157,37 +157,43 @@
 <main>
     <div class="overall">
 
-    <div class="cardstack" id="hubcards">
-      <!-- ALL HUB CARDS GO HERE -->
-    </div>
     
-    <div class="cardstack" id="bulbcards" bind:this={bulbcardsbox}>
-      <!-- ALL BULB CARDS GO HERE -->
-    </div>
+    <fieldset class="section">
+        <legend>Bridges</legend>
+        <!-- ALL HUB CARDS GO HERE -->
+        <span class="cardstack" id="hubcards" />
+    </fieldset>
     
-    </div>
+        
+        
     
-    <button on:click={order_experiment}>ORDER</button>
+    <fieldset class="section">
+        <legend>Bulbs</legend>
+            <!-- ALL BULB CARDS GO HERE -->
+            <span id="bulbcards" />
+    
     
     <fieldset class="buttonbunch">
         <legend>Selected Bulbs</legend>
-        <div class="bunchedbutton"><button on:click={ () => setSelectionAll(true)}>All</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setSelectionAll(false)}>None</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"on":false} )}>Off</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"on":true} )} >ON</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"bri":160,"hue":1811,"sat":208})  }>red</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setSelBulbs({"bri":200,"hue":29111,"sat":158})  }>green</button></div>
+        <button on:click={ () => setSelectionAll(true)}>All</button>
+        <button on:click={ () => setSelectionAll(false)}>None</button>
+        <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
+        <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
         <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
     </fieldset>
+    </fieldset>
 
+    
+    </div>
+    
     <fieldset class="buttonbunch"> 
         <legend>All Bulbs</legend>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs({on:false}) }>All Off</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs({on:true}) }>All ON</button></div>
-        <div class="bunchedbutton"><button on:click={ dumpAllLights }>All Lights JSON</button></div>
-        <div class="bunchedbutton"><button on:click={ checkAllAvail }>Avail?</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button></div>
-        <div class="bunchedbutton"><button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button></div>
+        <button on:click={ () => setAllBulbs({on:false}) }>All Off</button>
+        <button on:click={ () => setAllBulbs({on:true}) }>All ON</button>
+        <button on:click={ dumpAllLights }>All Lights JSON</button>
+        <button on:click={ checkAllAvail }>Avail?</button>
+        <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button>
+        <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button>
     </fieldset>
     
     
@@ -205,10 +211,20 @@
 
 
 <style>
+.section   {
+    
+    border: #aaa solid 5px;  
+    border-radius:0.7em; 
+    padding: .3rem;
+    margin:2px;
+    margin-bottom:.8rem;
+    display: block;
+}
+.section legend { color: #666; }
+
+
 .cardstack {
     display: flex;
-    flex-direction: column;
-    /*border:1px #777 dotted;*/
     padding:2px;
 }
 
@@ -220,15 +236,14 @@
     padding:.53rem;
     margin-top:1em;
 }
-.bunchedbutton {
-    padding:.013em;
+
+.buttonbunch button  {
     margin:2px;
     border:2px solid #448;
     border-radius:6px;
 }
 
 .overall {
-    display:flex;
 }
 
 
