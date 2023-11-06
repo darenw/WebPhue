@@ -14,6 +14,8 @@ export let unique_id = "";
 export let selected = false;
 export let available = true;    //  Optimism. False if physically turned off, out of reach
 
+export let current_color = {bri: 0, sat: 0, hue: 0, xy: [1.0,1.0] };
+
 
 const plain_class = "whole,backcolor-green";
 const selected_class = "whole,backcolor-red";
@@ -28,13 +30,26 @@ export async function checkAvail()  {
     }
 }
 
-export function setjson(json)  {
+
+export async function updateMyColorFromReality()  {
+    const c = await myhub.getBulbColor(hib);
+    current_color = {
+            bri: c["bri"], 
+            sat: c["sat"], 
+            hue: c["hue"], 
+            xy:  c["xy"]
+    } 
+}
+
+
+export  function setjson(json)  {
     if (myhub)  {
         myhub.setBulb(hib, json);
+        updateMyColorFromReality();
     }
 }
 
-function tinyColorChosen(ev)  {
+async function tinyColorChosen(ev)  {
     //console.log("BULB hears TinyColor message!  ", ev.detail);
     setjson(ev.detail.json);
 }
@@ -65,9 +80,10 @@ function selectionClick(ev)  {
         draggable={false} 
         on:click={selectionClick}
 >
-<legend>Bulb</legend>
-<p><b>{name}</b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
+<legend>{name}</legend>
+<p><b>{name} </b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
 <p><span class="pale">{unique_id}</span></p>
+<p>{current_color["bri"]} {current_color["sat"]} {current_color["hue"]} {current_color["xy"]}</p>
 <div class="tinybuttonbox">
 <TinyColorButtons 
         on:color_chosen={tinyColorChosen} 
@@ -88,7 +104,6 @@ function selectionClick(ev)  {
 </fieldset><!-- class whole -->
 
 
-
 <style>
 .whole  { 
     border: #773 solid 5px;  
@@ -103,7 +118,15 @@ function selectionClick(ev)  {
     display: inline;
 }
 
-.whole.over { border:dotted 5px #aa6; }
+.whole.over { 
+    border:dotted 5px #aa6; 
+}
+
+.whole legend {
+    margin-left:1em;
+    color: #662;
+}
+
 .over { border:dotted 5px #fa0; }
 
 .selected { background:#f4f8ff; border:#886 solid 5px;}

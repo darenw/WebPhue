@@ -38,6 +38,20 @@ export async function checkAvailOfBulbByIndex(hib)    {
 }
 
 
+export async function getBulbColor(hib)   {
+  let url = url0 + "/lights/" + hib + "/";
+  const reply = await fetch(url);
+  const bulbjson = await reply.json();
+  const s = bulbjson["state"];
+  let color_json = { 
+            bri: s["bri"],  
+            sat: s["sat"],
+            hue: s["hue"],
+            xy: s["xy"]
+  };
+  return color_json;
+}
+
 
 export function setBulb(hib, json)  {
   let url = url0 + "/lights/" + hib + "/state";
@@ -48,6 +62,7 @@ export function setBulb(hib, json)  {
     };
   fetch(url,  req)
     .then( response => response.json() );
+    
 }
 
 
@@ -66,7 +81,7 @@ function tinyColorChosen(ev)  {
 
 
 <fieldset class="whole">
-<legend>Hue Bridge</legend>
+<legend>{name}</legend>
 <p>{name} at {ipaddr}</p>
 <p id="key">{key}</p>
 <p class="technobabble">{mac}</p>
@@ -91,6 +106,11 @@ function tinyColorChosen(ev)  {
     width:25rem;
     text-align: center;
     display: inline;
+}
+
+.whole legend {
+    margin-left:1em;
+    color: #263;
 }
 
 .buttonbunch {
