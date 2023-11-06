@@ -34,6 +34,11 @@
   }
   
   
+  function updateAllBulbColorsFromReality()  {
+    for (let bulb of all_bulbs)   {
+        bulb.updateMyColorFromReality();
+    }
+  }
   
   
   async function setAllBulbs(json)   {
@@ -133,6 +138,7 @@
         console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
         bulbdefs.push(...new_defs);
     }
+    
     bulbdefs.sort( (a,b) => a.name.localeCompare(b.name) );
     
     let bulbcards = document.getElementById("bulbcards");
@@ -140,12 +146,15 @@
         let newb = new Bulb({target: bulbcards,  props: bdef});
         console.log("Made ",  newb.name);
         all_bulbs.push(newb);
+        newb.updateMyColorFromReality();
     }
   }  
 
 
   onMount(() => {
     createAllCards();
+    /*updateAllBulbColorsFromReality();*/ /*doesn't work*/
+    
   });
   
   
@@ -190,6 +199,7 @@
         <legend>All Bulbs</legend>
         <button on:click={ () => setAllBulbs({on:false}) }>All Off</button>
         <button on:click={ () => setAllBulbs({on:true}) }>All ON</button>
+        <button on:click={ updateAllBulbColorsFromReality }>colorupdate</button>
         <button on:click={ dumpAllLights }>All Lights JSON</button>
         <button on:click={ checkAllAvail }>Avail?</button>
         <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button>
