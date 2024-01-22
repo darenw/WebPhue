@@ -41,6 +41,28 @@
   }
   
   
+  function dumpBulbStates()   {
+  
+    updateAllBulbColorsFromReality();  
+    const listdiv = document.getElementById("bulbcolorslist");
+    let ss="";
+    for (let bulb of all_bulbs)  {
+        const cc = {bulb: bulb.name, color:{on: bulb.bulb_is_on }};
+        const s =`bulb ${bulb.name} ${bulb.bulb_is_on? "on":"off"} B=${bulb.current_bri} S=${bulb.current_sat} H=${bulb.current_hue} x=${bulb.current_ciex} y=${bulb.current_ciey}`;
+        console.log(s);
+        ss += s + "\n";
+        
+            
+    }
+    listdiv.textContent = ss;
+  }
+
+
+
+  function setBulbStatesFromText()   {
+    
+  }
+  
   async function setAllBulbs(json)   {
     for (let hub of all_hubs)   {
         hub.setAllBulbs(json);
@@ -194,6 +216,13 @@
 
     
     </div>
+    
+    <fieldset class="section">
+        <legend>Memory</legend>
+        <button on:click={dumpBulbStates}>Dump</button>
+        <button on:click={setBulbStatesFromText}>Set</button>
+        <textarea id="bulbcolorslist"></textarea>
+    </fieldset>
     
     <fieldset class="buttonbunch"> 
         <legend>All Bulbs</legend>

@@ -14,8 +14,12 @@ export let unique_id = "";
 export let selected = false;
 export let available = true;    //  Optimism. False if physically turned off, out of reach
 
-export let current_color = {bri: 0, sat: 0, hue: 0, xy: [1.0,1.0] };
-
+export let bulb_is_on = true;
+export let current_bri = 0;
+export let current_sat = 0;
+export let current_hue = 0;
+export let current_ciex = 0;
+export let current_ciey = 0;
 
 const plain_class = "whole,backcolor-green";
 const selected_class = "whole,backcolor-red";
@@ -32,13 +36,14 @@ export async function checkAvail()  {
 
 
 export async function updateMyColorFromReality()  {
-    const c = await myhub.getBulbColor(hib);
-    current_color = {
-            bri: c["bri"], 
-            sat: c["sat"], 
-            hue: c["hue"], 
-            xy:  c["xy"]
-    } 
+    const state = await myhub.getBulbStateJson(hib);
+    current_bri = state["bri"]; 
+    current_sat = state["sat"]; 
+    current_hue = state["hue"];
+    let current_xy =  state["xy"];
+    current_ciex = current_xy[0];
+    current_ciey = current_xy[1];
+    bulb_is_on = state["on"];
 }
 
 
@@ -49,12 +54,23 @@ export  function setjson(json)  {
     }
 }
 
+export function turnBulbOn() {
+    setjson({on:true})
+    bulb_is_on = true;
+}
+
+export function turnBulbOff() {
+    setjson({on:false});
+    bulb_is_on = false;
+}
+
+
 async function tinyColorChosen(ev)  {
     //console.log("BULB hears TinyColor message!  ", ev.detail);
     setjson(ev.detail.json);
 }
 
-let colorhover="";
+let colorhover=" ";
 function tinyColorHovering(ev)  {
     //console.log("BULB hears TinyColor message!  ", ev.detail);
     colorhover = ev.detail.name;
@@ -81,25 +97,44 @@ function selectionClick(ev)  {
         on:click={selectionClick}
 >
 <legend>{name}</legend>
-<p><b>{name} </b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
-<p><span class="pale">{unique_id}</span></p>
-<p>{current_color["bri"]} {current_color["sat"]} {current_color["hue"]} {current_color["xy"]}</p>
+<p> {selected? "√ ":" "} <b>{name} </b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
+<p><span class="pale">{unique_id} {available? "avail":"dead"}</span></p>
+
+<table>
+    <tr>
+        <th>bri</th>
+        <th>sat</th>
+        <th>hue</th>
+        <th>CIE x,y</th>
+    </tr>
+    <tr>
+        <td>{current_bri}</td>
+        <td>{current_sat}</td>
+        <td>{current_hue}</td>
+        <td>{current_ciex},{current_ciey}</td>
+    </tr>
+</table>
+
 <div class="tinybuttonbox">
-<TinyColorButtons 
+ 
+<TinyColorButtons style="float:right" 
         on:color_chosen={tinyColorChosen} 
         on:color_hover={tinyColorHovering} 
         on:mouseout={ (ev) => {colorhover="  "} }
         />
-<p>{selected? "selected":""}  {available? "avail":"dead"} {colorhover}</p>
 </div>
 
 <div class="buttonbunch">
-    <button on:click|stopPropagation={ () => setjson({on:true}) } >ON</button>
-    <button on:click|stopPropagation={ () => setjson({on:false}) } >Off</button>
+    <button on:click|stopPropagation={ turnBulbOn } >On</button>
+    <button on:click|stopPropagation={ turnBulbOff } >Off</button>
+    {#if (!available)}
     <button on:click|stopPropagation={ checkAvail } >avail?</button>
+    {/if}
     <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button>
     <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
 </div>
+
+<p class="status">{colorhover}</p>
 
 </fieldset><!-- class whole -->
 
@@ -108,10 +143,13 @@ function selectionClick(ev)  {
 .whole  { 
     border: #773 solid 5px;  
     border-radius:0.7em; 
+    padding-top:12em;
+    
     background:#fffad9;
     padding: .3rem;
     margin:2px;
     width:23rem; 
+    
     resize:none;
     text-align: center;
     cursor:move;
@@ -138,21 +176,50 @@ p {
     margin:0;
 }
 
+table {
+    border: 1px #996 solid;
+    background: #f9f9f1;
+    border-collapse: collapse;
+    margin-bottom:3px;
+    float: left;
+}
+th {    
+    padding-left:.35em;
+    padding-right:.35em; 
+    padding-bottom:3px;
+    font-size:0.7em;
+    font-weight:normal;
+    color:#555;
+}
+td { 
+    padding-left:.35em; 
+    padding-right:.35em; 
+    padding-top:0;
+    font-weight:500;
+}
+
+
 div.tinybuttonbox {
     
 }
 
 button { margin:0; }
 
-.pale { color:#663; font-size:.8em; }
+.pale { color:#686838; font-size:.7em; }
 
 .buttonbunch {
-/*    display: flex;*/
+    clear:left;
+    float:left;
+    margin-top:3px;
 }
 .buttonbunch button {
     border:2px solid #263;
     border-radius:6px;
     font-size:0.7em;
+}
+
+.status {
+    float:right;
 }
 
 </style>

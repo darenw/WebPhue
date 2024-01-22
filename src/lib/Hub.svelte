@@ -38,18 +38,11 @@ export async function checkAvailOfBulbByIndex(hib)    {
 }
 
 
-export async function getBulbColor(hib)   {
+export async function getBulbStateJson(hib)   {
   let url = url0 + "/lights/" + hib + "/";
   const reply = await fetch(url);
   const bulbjson = await reply.json();
-  const s = bulbjson["state"];
-  let color_json = { 
-            bri: s["bri"],  
-            sat: s["sat"],
-            hue: s["hue"],
-            xy: s["xy"]
-  };
-  return color_json;
+  return  bulbjson["state"];
 }
 
 
