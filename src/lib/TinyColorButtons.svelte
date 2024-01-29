@@ -94,6 +94,10 @@ onMount( () => {
 
 </script>
 
+
+
+<!---------------------------   H T M L   ---------------------------->
+
 <div class="surrounding" width={canvas_w+6} height={canvas_h+6}>
 <canvas 
     bind:this={the_canvas}
@@ -107,6 +111,8 @@ onMount( () => {
     />
 </div>
 
+
+<!---------------------------   S T Y L E   ---------------------------->
 <style>
 .surrounding {
     border: 1px solid black;

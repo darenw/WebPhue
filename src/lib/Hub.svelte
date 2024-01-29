@@ -74,6 +74,8 @@ function tinyColorChosen(ev)  {
 </script>
 
 
+
+<!----------------------------------   H T M L   ---------------------------->
 <fieldset class="card">
 <legend>{name}</legend>
 <p>{name} at {ipaddr}</p>
@@ -90,6 +92,8 @@ function tinyColorChosen(ev)  {
 </fieldset>
 
 
+
+<!--------------------------------   S T Y L E   ---------------------------->
 <style>
 .card  { 
     border-color: #284;

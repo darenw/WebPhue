@@ -37,6 +37,6 @@
     color: #f6066;
 }
 
-.over { border:dotted 5px #fa0; }
 
-.selected { background:#f4f8ff; border:#886 solid 5px;}
+
+.selected-card { background-color:#fff;  border:#aaa dashed 5px; }

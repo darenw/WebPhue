@@ -21,13 +21,14 @@ export let current_hue = 0;
 export let current_ciex = 0;
 export let current_ciey = 0;
 
-const plain_class = "whole,backcolor-green";
-const selected_class = "whole,backcolor-red";
-const dead_class = "whole,backcolor-white";
+const plain_class = "card";
+const selected_class = "card,selected-card";
+const dead_class = "card";
 let mystate_class = selected_class;
 
 
-export async function checkAvail()  {
+
+export async function checkPhysicalBulbAvailable()  {
     if (myhub)  {
         console.log("I, ", name, " am asking hub ", myhub.name, " to check me at id=", hib);
         available = myhub.checkAvailOfBulbByIndex(hib);
@@ -47,12 +48,16 @@ export async function updateMyColorFromReality()  {
 }
 
 
+
 export  function setjson(json)  {
     if (myhub)  {
         myhub.setBulb(hib, json);
         updateMyColorFromReality();
     }
 }
+
+
+
 
 export function turnBulbOn() {
     setjson({on:true})
@@ -65,16 +70,21 @@ export function turnBulbOff() {
 }
 
 
+
 async function tinyColorChosen(ev)  {
     //console.log("BULB hears TinyColor message!  ", ev.detail);
     setjson(ev.detail.json);
 }
+
+
 
 let colorhover=" ";
 function tinyColorHovering(ev)  {
     //console.log("BULB hears TinyColor message!  ", ev.detail);
     colorhover = ev.detail.name;
 }
+
+
 
 function selectionClick(ev)  {
     selected = !selected;
@@ -88,16 +98,18 @@ function selectionClick(ev)  {
 
 </script>
 
+<!---------------------------   H T M L   ---------------------------->
+
 
 
 <fieldset class="card" 
-        class:selected={selected} 
+        class:selected-card={selected} 
         class:deadbulb={!available} 
         draggable={false} 
         on:click={selectionClick}
 >
 <legend>{name}</legend>
-<p> {selected? "√ ":" "} <b>{name} </b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
+<p> {selected? "√ ":" "} <b>{name} </b> <span class="pale-tech">{model}</span> {myhub.name}:{hib} </p>
 <p><span class="pale">{unique_id} {available? "avail":"dead"}</span></p>
 
 <div class="tinybuttonbox">
@@ -128,7 +140,7 @@ function selectionClick(ev)  {
     <button on:click|stopPropagation={ turnBulbOn } >On</button>
     <button on:click|stopPropagation={ turnBulbOff } >Off</button>
     {#if (!available)}
-    <button on:click|stopPropagation={ checkAvail } >avail?</button>
+    <button on:click|stopPropagation={ checkPhysicalBulbAvailable } >avail?</button>
     {/if}
     <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button>
     <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
@@ -136,8 +148,13 @@ function selectionClick(ev)  {
 
 <p class="status">{colorhover}</p>
 
-</fieldset><!-- class whole -->
+</fieldset>
 
+
+
+
+
+<!---------------------------   S T Y L E   ---------------------------->
 
 <style>
 .card { 
@@ -148,6 +165,7 @@ function selectionClick(ev)  {
 }
 
 .deadbulb { background:#ccc;  border:#888 solid 5px; }
+.selected-card { background-color:#fff; border-color: #773;}
 
 
 p {
@@ -184,7 +202,7 @@ div.tinybuttonbox {
 
 button { margin:0; }
 
-.pale { color:#686838; font-size:.7em; }
+.pale-tech { color:#686838; font-size:.7em; }
 
 .buttonbunch {
     clear:left;
