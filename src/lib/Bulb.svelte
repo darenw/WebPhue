@@ -21,11 +21,6 @@ export let current_hue = 0;
 export let current_ciex = 0;
 export let current_ciey = 0;
 
-const plain_class = "card";
-const selected_class = "card,selected-card";
-const dead_class = "card";
-let mystate_class = selected_class;
-
 
 
 export async function checkPhysicalBulbAvailable()  {
@@ -88,11 +83,6 @@ function tinyColorHovering(ev)  {
 
 function selectionClick(ev)  {
     selected = !selected;
-    if (selected) {
-        mystate_class = selected_class;
-    }else {
-        mystate_class = plain_class;
-    }
 }
 
 
