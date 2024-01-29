@@ -1,0 +1,42 @@
+/*
+ * Common styles for all "card" components: Hub, Bulb, Group etc.
+ * 
+ * Component's <style> must override:
+ *      .card { border-color: #123; background: #abc; }
+ *      .card legend { color: #123; }
+ */
+
+
+.cardgroup  {
+}
+
+
+
+
+.card  { 
+    border: #f00 solid 5px;  
+    border-radius: 0.7em; 
+    background: #d4d;
+    padding-top: 12em;
+    padding: .3rem;
+    margin:2px;
+    width:23rem; 
+    
+    resize:none;
+    text-align: center;
+    cursor:move;
+    display: inline;
+}
+
+.card.over { 
+    border:dotted 5px #aa6; 
+}
+
+.card  legend {
+    margin-left:1em;
+    color: #f6066;
+}
+
+.over { border:dotted 5px #fa0; }
+
+.selected { background:#f4f8ff; border:#886 solid 5px;}

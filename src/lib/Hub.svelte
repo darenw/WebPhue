@@ -3,6 +3,7 @@
 
 <script>
 import TinyColorButtons  from './TinyColorButtons.svelte';
+import './card.css'; 
 
 export let name = "unnamed";
 export let ipaddr = "192.168.x.x";
@@ -73,7 +74,7 @@ function tinyColorChosen(ev)  {
 </script>
 
 
-<fieldset class="whole">
+<fieldset class="card">
 <legend>{name}</legend>
 <p>{name} at {ipaddr}</p>
 <p id="key">{key}</p>
@@ -90,21 +91,12 @@ function tinyColorChosen(ev)  {
 
 
 <style>
-.whole  { 
-    border: #263 solid 5px;  
-    border-radius:0.7em; 
+.card  { 
+    border-color: #284;
     background:#e6ffef;
-    padding: .2rem;
-    margin:2px;
-    width:25rem;
-    text-align: center;
-    display: inline;
 }
+.card legend {  color: #152; }
 
-.whole legend {
-    margin-left:1em;
-    color: #263;
-}
 
 .buttonbunch {
     display: flex;

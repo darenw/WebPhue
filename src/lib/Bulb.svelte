@@ -3,7 +3,7 @@
 
 <script>
 import TinyColorButtons  from './TinyColorButtons.svelte';
-
+import './card.css'; 
 
 export let name = "unnamed";
 export let myhub;           // ref to a Hub component created in App
@@ -90,7 +90,7 @@ function selectionClick(ev)  {
 
 
 
-<fieldset class="whole" 
+<fieldset class="card" 
         class:selected={selected} 
         class:deadbulb={!available} 
         draggable={false} 
@@ -99,6 +99,14 @@ function selectionClick(ev)  {
 <legend>{name}</legend>
 <p> {selected? "√ ":" "} <b>{name} </b> <span class="pale">{model}</span> {myhub.name}:{hib} </p>
 <p><span class="pale">{unique_id} {available? "avail":"dead"}</span></p>
+
+<div class="tinybuttonbox">
+<TinyColorButtons style="float:right" 
+        on:color_chosen={tinyColorChosen} 
+        on:color_hover={tinyColorHovering} 
+        on:mouseout={ (ev) => {colorhover="  "} }
+        />
+</div>
 
 <table>
     <tr>
@@ -115,14 +123,6 @@ function selectionClick(ev)  {
     </tr>
 </table>
 
-<div class="tinybuttonbox">
- 
-<TinyColorButtons style="float:right" 
-        on:color_chosen={tinyColorChosen} 
-        on:color_hover={tinyColorHovering} 
-        on:mouseout={ (ev) => {colorhover="  "} }
-        />
-</div>
 
 <div class="buttonbunch">
     <button on:click|stopPropagation={ turnBulbOn } >On</button>
@@ -140,34 +140,13 @@ function selectionClick(ev)  {
 
 
 <style>
-.whole  { 
-    border: #773 solid 5px;  
-    border-radius:0.7em; 
-    padding-top:12em;
-    
+.card { 
+    border-color:#773; 
     background:#fffad9;
-    padding: .3rem;
-    margin:2px;
-    width:23rem; 
-    
-    resize:none;
-    text-align: center;
-    cursor:move;
-    display: inline;
+}
+.card legend {     color: #662;
 }
 
-.whole.over { 
-    border:dotted 5px #aa6; 
-}
-
-.whole legend {
-    margin-left:1em;
-    color: #662;
-}
-
-.over { border:dotted 5px #fa0; }
-
-.selected { background:#f4f8ff; border:#886 solid 5px;}
 .deadbulb { background:#ccc;  border:#888 solid 5px; }
 
 
