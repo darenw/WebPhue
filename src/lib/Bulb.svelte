@@ -45,7 +45,9 @@ export async function updateMyColorFromReality()  {
 
 
 export  function setjson(json)  {
+console.log(`I am ${name} and my ?ub is ${myhub.name}:${hib}`);
     if (myhub)  {
+console.log(`I am ${name} and my hub is ${myhub.name}:${hib} setting ${json}`);
         myhub.setBulb(hib, json);
         updateMyColorFromReality();
     }
@@ -115,13 +117,14 @@ function selectionClick(ev)  {
         <th>bri</th>
         <th>sat</th>
         <th>hue</th>
-        <th>CIE x,y</th>
+        <th>CIE x</th>
+        <th>y</th>
     </tr>
     <tr>
         <td>{current_bri}</td>
         <td>{current_sat}</td>
         <td>{current_hue}</td>
-        <td>{current_ciex},{current_ciey}</td>
+        <td>{current_ciex}</td><td>{current_ciey}</td>
     </tr>
 </table>
 

@@ -60,7 +60,7 @@ export function setBulb(hib, json)  {
 }
 
 export async function findNewBulbs()  {
-    console.debug("PRETEND --FIND-- --NEW-- --BULBS-- ");
+    console.log("PRETEND --FIND-- --NEW-- --BULBS-- ");
 }
 
 export async function  setAllBulbs(json)   {

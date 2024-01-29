@@ -4,6 +4,7 @@
 
   import Hub from './lib/Hub.svelte';
   import Bulb from './lib/Bulb.svelte';
+  import Group from './lib/Group.svelte';
   import TinyColorButtons  from './lib/TinyColorButtons.svelte';
 
   import {bulb_associated_names, 
@@ -20,6 +21,10 @@
   let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
   let all_groups = [];
   
+  let group_all;
+  let group_hydra;
+
+
   function order_experiment() {
     /* ? */
   }
@@ -51,8 +56,6 @@
         const s =`bulb ${bulb.name} ${bulb.bulb_is_on? "on":"off"} B=${bulb.current_bri} S=${bulb.current_sat} H=${bulb.current_hue} x=${bulb.current_ciex} y=${bulb.current_ciey}`;
         console.log(s);
         ss += s + "\n";
-        
-            
     }
     listdiv.textContent = ss;
   }
@@ -122,8 +125,8 @@
   }
   
   
-  
-  async function makeBulbCardDefinitionsForHub(hub)   {
+
+async function makeBulbCardDefinitionsForHub(hub)   {
     console.log("Making cards for all bulbs of hub ", hub.name);
     let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
     let defs =[];
@@ -145,14 +148,32 @@
         defs.push(bulb_props);
     }
     return defs;
-  }
+}
 
 
+function reviewAllBulbs() {
+    console.log(`  ALL_BULBSreview  (n=${all_bulbs.length} : `);
+    for (let x of all_bulbs) {
+        console.log("        ",  x); //x.name, x.myhub, x.hib);
+    }
+}
 
-  async function createAllCards()  {
+function feedGroup(G) {
     
+    console.log("Feeding Group", G.name);
+    reviewAllBulbs();
+    for (let b of all_bulbs)  {
+        if (b.selected)   G.takeThisBulb(b);
+    }
+}
+
+
+
+
+async function createAllCards()  {
+
     await makeHubCards();
-    
+
     // Get bulb info from _all_ hubs first before trying to sort them
     let bulbdefs = []
     for (let hub of all_hubs)  {
@@ -160,25 +181,33 @@
         console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
         bulbdefs.push(...new_defs);
     }
-    
+
     bulbdefs.sort( (a,b) => a.name.localeCompare(b.name) );
-    
+
     let bulbcards = document.getElementById("bulbcards");
     for (let bdef of bulbdefs)  {
         let newb = new Bulb({target: bulbcards,  props: bdef});
-        console.log("Made ",  newb.name);
+        console.log("Made ",  newb.name,  "(", newb , " ) ");
         all_bulbs.push(newb);
+        console.log("all_bulbs.length = ", all_bulbs.length, "  newb.name=", newb.name);
         newb.updateMyColorFromReality();
     }
-  }  
+    reviewAllBulbs();
+
+}  
 
 
-  onMount(() => {
+
+
+onMount(() => {
     createAllCards();
-    /*updateAllBulbColorsFromReality();*/ /*doesn't work*/
-    
-  });
+
+});
   
+
+function test_FillHydraGroup(ev)  {
+    feedGroup();
+}
   
 </script>
 
@@ -190,21 +219,26 @@
 
 <main>
         
+    <Group bind:this={group_all} on:takesel={ ()=>{feedGroup(group_all)} } name="All">Blurp</Group>
+    <Group bind:this={group_hydra} on:takesel={ ()=>{feedGroup(group_hydra)} } name="Hydra">Blurp</Group>
+    
+    
     
     <fieldset class="section">
+        <fieldset class="buttonbunch">
+            <legend>Selection</legend>
+            <button on:click={ () => setSelectionAll(true)}>All</button>
+            <button on:click={ () => setSelectionAll(false)}>None</button>
+            <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
+            <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
+            <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
+        </fieldset>
+
         <legend>Bulbs</legend>
             <!-- ALL BULB CARDS GO HERE -->
             <span id="bulbcards" />
     
     
-    <fieldset class="buttonbunch">
-        <legend>Selected Bulbs</legend>
-        <button on:click={ () => setSelectionAll(true)}>All</button>
-        <button on:click={ () => setSelectionAll(false)}>None</button>
-        <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
-        <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
-        <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
-    </fieldset>
     </fieldset>
 
     
@@ -220,6 +254,7 @@
         <legend>All Bulbs</legend>
         <button on:click={ () => setAllBulbs({on:false}) }>All Off</button>
         <button on:click={ () => setAllBulbs({on:true}) }>All ON</button>
+    <button on:click={ () => createStandardGroups()}>Add To HYDRA (TEST)</button>
         <button on:click={ updateAllBulbColorsFromReality }>colorupdate</button>
         <button on:click={ dumpAllLights }>All Lights JSON</button>
         <button on:click={ checkAllAvail }>Avail?</button>
