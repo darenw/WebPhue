@@ -59,6 +59,9 @@ export function setBulb(hib, json)  {
     
 }
 
+export async function findNewBulbs()  {
+    console.debug("PRETEND --FIND-- --NEW-- --BULBS-- ");
+}
 
 export async function  setAllBulbs(json)   {
     let bulbs = await dumpBulbStates();
@@ -84,17 +87,15 @@ function tinyColorChosen(ev)  {
 <div class="buttonbunch">
     <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>All OFF</button>
     <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>All ON</button>
-    <TinyColorButtons 
-        on:color_chosen={tinyColorChosen} 
-        />
-
+    <button on:click|stopPropagation={ () => findNewBulbs() }>Find new bulbs (unimpl)</button>
 </div>
 </fieldset>
 
 
 
-<!--------------------------------   S T Y L E   ---------------------------->
+<!----------------------------------   S T Y L E   ---------------------------->
 <style>
+
 .card  { 
     border-color: #284;
     background:#e6ffef;
@@ -102,12 +103,8 @@ function tinyColorChosen(ev)  {
 .card legend {  color: #152; }
 
 
-.buttonbunch {
-    display: flex;
-}
 .buttonbunch button {
-    border:2px solid #263;
-    border-radius:6px;
+    border-color: #263;
 }
 
 

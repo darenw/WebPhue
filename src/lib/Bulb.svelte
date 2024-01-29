@@ -112,8 +112,8 @@ function selectionClick(ev)  {
 <p> {selected? "√ ":" "} <b>{name} </b> <span class="pale-tech">{model}</span> {myhub.name}:{hib} </p>
 <p><span class="pale">{unique_id} {available? "avail":"dead"}</span></p>
 
-<div class="tinybuttonbox">
-<TinyColorButtons style="float:right" 
+<div class="tinybuttonbox" style="float:right" >
+<TinyColorButtons 
         on:color_chosen={tinyColorChosen} 
         on:color_hover={tinyColorHovering} 
         on:mouseout={ (ev) => {colorhover="  "} }
@@ -171,28 +171,6 @@ function selectionClick(ev)  {
 p {
     padding:0;
     margin:0;
-}
-
-table {
-    border: 1px #996 solid;
-    background: #f9f9f1;
-    border-collapse: collapse;
-    margin-bottom:3px;
-    float: left;
-}
-th {    
-    padding-left:.35em;
-    padding-right:.35em; 
-    padding-bottom:3px;
-    font-size:0.7em;
-    font-weight:normal;
-    color:#555;
-}
-td { 
-    padding-left:.35em; 
-    padding-right:.35em; 
-    padding-top:0;
-    font-weight:500;
 }
 
 

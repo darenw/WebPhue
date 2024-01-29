@@ -1,9 +1,12 @@
 /*
  * Common styles for all "card" components: Hub, Bulb, Group etc.
  * 
- * Component's <style> must override:
+ * Component's <style> must override (lest ye see gaudy):
  *      .card { border-color: #123; background: #abc; }
  *      .card legend { color: #123; }
+ *      .selected-card { background-color:#fff; border-color: #773;}
+ *      .buttonbunch button { border-color: #123; }
+ *      table { border-color: #123; }
  */
 
 
@@ -40,3 +43,38 @@
 
 
 .selected-card { background-color:#fff;  border:#aaa dashed 5px; }
+
+
+.buttonbunch {
+    display: flex;
+}
+.buttonbunch button {
+    border:2px solid #0dd;
+    border-radius:6px;
+    padding:0.41em;
+}
+
+
+
+
+table {
+    border: 1px #996 solid;
+    background: #f9f9f1;
+    border-collapse: collapse;
+    margin-bottom:3px;
+    float: left;
+}
+th {    
+    padding-left:.35em;
+    padding-right:.35em; 
+    padding-bottom:3px;
+    font-size:0.7em;
+    font-weight:normal;
+    color:#555;
+}
+td { 
+    padding-left:.35em; 
+    padding-right:.35em; 
+    padding-top:0;
+    font-weight:500;
+}

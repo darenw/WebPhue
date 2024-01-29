@@ -18,7 +18,7 @@
   let all_hubs = [];
   let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
   let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
-  
+  let all_groups = [];
   
   function order_experiment() {
     /* ? */
@@ -185,17 +185,10 @@
 
 
 
-<main>
-    <div class="overall">
 
-    
-    <fieldset class="section">
-        <legend>Bridges</legend>
-        <!-- ALL HUB CARDS GO HERE -->
-        <span class="cardstack" id="hubcards" />
-    </fieldset>
-    
-        
+<!----------------------------------   H T M L   ---------------------------->
+
+<main>
         
     
     <fieldset class="section">
@@ -215,7 +208,6 @@
     </fieldset>
 
     
-    </div>
     
     <fieldset class="section">
         <legend>Memory</legend>
@@ -235,6 +227,13 @@
         <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button>
     </fieldset>
     
+        
+    <fieldset class="section">
+        <legend>Bridges</legend>
+        <!-- ALL HUB CARDS GO HERE -->
+        <span class="cardstack" id="hubcards" />
+    </fieldset>
+
     
     
     <address>
@@ -248,6 +247,8 @@
 
 
 
+
+<!----------------------------------   S T Y L E   ---------------------------->
 
 <style>
 .section   {
@@ -273,7 +274,7 @@
     border:4px solid #55a;
     border-radius:0.7em;
     padding:.53rem;
-    margin-top:1em;
+    margin-top:.6em;
 }
 
 .buttonbunch button  {
