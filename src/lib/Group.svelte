@@ -5,6 +5,8 @@
 
 import './card.css'; 
 import './Bulb.svelte'; 
+import TinyColorButtons  from './TinyColorButtons.svelte';
+
 import { createEventDispatcher } from 'svelte';
 
 
@@ -54,6 +56,19 @@ export function eatSelectedBulbs()  {
     dispatch('takesel', { me:999 });
 }
 
+
+async function tinyColorChosen(ev)  {
+    for (let bulb of members) {
+        bulb.setjson(ev.detail.json);
+    }
+}
+
+let colorhover=" ";
+function tinyColorHovering(ev)  {
+    //console.log("BULB hears TinyColor message!  ", ev.detail);
+    colorhover = ev.detail.name;
+}
+
 </script>
 
 
@@ -84,6 +99,12 @@ export function eatSelectedBulbs()  {
     <button on:click|stopPropagation={ () => selectMyBulbs(true) }>Sel</button>
     <button on:click|stopPropagation={ () => selectMyBulbs(false) }>Desel</button>
 </div>
+<TinyColorButtons style="float:right" 
+        on:color_chosen={tinyColorChosen} 
+        on:color_hover={tinyColorHovering} 
+        on:mouseout={ (ev) => {colorhover="  "} }
+        />
+
 
 </fieldset>
 
