@@ -45,9 +45,7 @@ export async function updateMyColorFromReality()  {
 
 
 export  function setjson(json)  {
-console.log(`I am ${name} and my ?ub is ${myhub.name}:${hib}`);
     if (myhub)  {
-console.log(`I am ${name} and my hub is ${myhub.name}:${hib} setting ${json}`);
         myhub.setBulb(hib, json);
         updateMyColorFromReality();
     }

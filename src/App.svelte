@@ -1,49 +1,50 @@
 <script>
-  import { onMount } from 'svelte';
-  import svelteLogo from './assets/svelte.svg';
+import { onMount } from 'svelte';
+import svelteLogo from './assets/svelte.svg';
 
-  import Hub from './lib/Hub.svelte';
-  import Bulb from './lib/Bulb.svelte';
-  import Group from './lib/Group.svelte';
-  import TinyColorButtons  from './lib/TinyColorButtons.svelte';
+import Hub from './lib/Hub.svelte';
+import Bulb from './lib/Bulb.svelte';
+import Group from './lib/Group.svelte';
+import TinyColorButtons  from './lib/TinyColorButtons.svelte';
+import { random_color, unittest_colors } from './lib/phcolor.js';
 
-  import {bulb_associated_names, 
-          hub_associated_names,
-          hub_ip_addresses
-          }   from './BulbAssignments';
-  
-  
-  
-  let textdump="";
-  
-  let all_hubs = [];
-  let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
-  let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
-  let all_groups = [];
-  
-  let group_all;
-  let group_hydra;
+import {bulb_associated_names, 
+      hub_associated_names,
+      hub_ip_addresses
+      }   from './BulbAssignments';
 
 
-  function order_experiment() {
+
+let textdump="";
+
+let all_hubs = [];
+let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
+let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
+let all_groups = [];
+
+let group_all;
+let group_hydra;
+
+
+function order_experiment() {
     /* ? */
-  }
-  
-  async function dumpAllLights()  {
+}
+
+async function dumpAllLights()  {
     let dt = "";
     for (let hub of all_hubs)   {
         let jsonx = await hub.dumpBulbStates();
         dt +=  JSON.stringify( jsonx );
     }
     textdump = dt;
-  }
-  
-  
-  function updateAllBulbColorsFromReality()  {
+}
+
+
+function updateAllBulbColorsFromReality()  {
     for (let bulb of all_bulbs)   {
         bulb.updateMyColorFromReality();
     }
-  }
+}
   
   
   function dumpBulbStates()   {
@@ -152,10 +153,11 @@ async function makeBulbCardDefinitionsForHub(hub)   {
 
 
 function reviewAllBulbs() {
+return /*
     console.log(`  ALL_BULBSreview  (n=${all_bulbs.length} : `);
     for (let x of all_bulbs) {
         console.log("        ",  x); //x.name, x.myhub, x.hib);
-    }
+    }*/ ;
 }
 
 function feedGroup(G) {
@@ -219,8 +221,18 @@ function test_FillHydraGroup(ev)  {
 
 <main>
         
-    <Group bind:this={group_all} on:takesel={ ()=>{feedGroup(group_all)} } name="All">Blurp</Group>
-    <Group bind:this={group_hydra} on:takesel={ ()=>{feedGroup(group_hydra)} } name="Hydra">Blurp</Group>
+    <Group bind:this={group_all} 
+                on:takesel={ ()=>{feedGroup(group_all)} } 
+                on:rmsel={ ()=>{rmBulbFromGroup(group_all)} } 
+                name="All">
+        Does this appear anywhere?
+    </Group>
+    <Group bind:this={group_hydra} 
+                on:takesel={ ()=>{feedGroup(group_hydra)} } 
+                on:rmsel={ ()=>{rmBulbFromGroup(group_hydra)} } 
+                name="Hydra">
+        Blurp
+    </Group>
     
     
     
@@ -269,7 +281,7 @@ function test_FillHydraGroup(ev)  {
         <span class="cardstack" id="hubcards" />
     </fieldset>
 
-    
+    <button on:click={unittest_colors}>phcolor.js UT</button>
     
     <address>
     Source: <a href="https://github.com/darenw/WebPhue">WebPhue</a> at GitHub 
