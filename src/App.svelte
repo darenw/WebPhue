@@ -19,11 +19,10 @@ let textdump="";
 
 let all_hubs = [];
 let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
-let bulbcardsbox;         // var to binded to DIV holding all Bulb cards
 let all_groups = [];
+let cards_box;         // var to binded to DIV holding all Bulb cards
 
 let group_all;
-let group_hydra;
 
 
 function order_experiment() {
@@ -110,7 +109,7 @@ function updateAllBulbColorsFromReality()  {
 
 
 
-  async function makeHubCards()  {
+async function createAllHubCards()  {
     console.log("Fetching Hub info, making Hub Cards");
     let hh = document.getElementById("hubcards");
     for (let ip of hub_ip_addresses)  {
@@ -129,11 +128,11 @@ function updateAllBulbColorsFromReality()  {
         all_hubs.push(hub);
     }
     console.log("Done making hubs");
-  }
+}
   
   
 
-async function makeBulbCardDefinitionsForHub(hub)   {
+async function makeBulbDefinitionsForHub(hub)   {
     console.log("Making cards for all bulbs of hub ", hub.name);
     let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
     let defs =[];
@@ -158,51 +157,17 @@ async function makeBulbCardDefinitionsForHub(hub)   {
 }
 
 
-function reviewAllBulbs() {
-return /*
-    console.log(`  ALL_BULBSreview  (n=${all_bulbs.length} : `);
-    for (let x of all_bulbs) {
-        console.log("        ",  x); //x.name, x.myhub, x.hib);
-    }*/ ;
-}
-
-
-
-function feedGroup(G) {
-    
-    console.log("Feeding Group", G.name);
-    reviewAllBulbs();
-    for (let b of all_bulbs)  {
-        if (b.selected)   G.takeThisBulb(b);
-    }
-}
-
-
-function rmBulbFromGroup(G) { 
-    
-    console.log("Feeding Group", G.name);
-    reviewAllBulbs();
-    let new_members = [];
-    for (let b of G.members)  {
-        if (!b.selected)   {
-            new_members.push(b);
-        }
-         
-    }
-    console.log(`new list len=${new_members.length}`);
-    G.members = new_members;
-}
 
 
 
 async function createAllCards()  {
 
-    await makeHubCards();
+    await createAllHubCards();
 
     // Get bulb info from _all_ hubs first before trying to sort them
     let bulbdefs = []
     for (let hub of all_hubs)  {
-        let new_defs = await makeBulbCardDefinitionsForHub(hub);
+        let new_defs = await makeBulbDefinitionsForHub(hub);
         console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
         bulbdefs.push(...new_defs);
     }
@@ -217,23 +182,47 @@ async function createAllCards()  {
         console.log("all_bulbs.length = ", all_bulbs.length, "  newb.name=", newb.name);
         newb.updateMyColorFromReality();
     }
-    reviewAllBulbs();
+
+    createAllGroups();
 
 }  
 
+
+function createNewGroup()  {
+    
+    let selected_bulbs = all_bulbs.filter( (b) => b.selected );
+    let gdef = {
+        name: "NEW_"+all_groups.length,  // Need to let user enter name
+        members: selected_bulbs,
+        all_bulbs: all_bulbs
+    }
+    group_all = new Group({target: groupcards, props: gdef}) 
+    
+    all_groups.push(group_all)
+}
+
+
+async function createAllGroups()   {
+    console.log("ALL Gr ", all_groups);
+    
+    let gdef = {
+        name: "All",
+        members: all_bulbs.slice(),
+        all_bulbs: all_bulbs
+    }
+    group_all = new Group({target: groupcards, props: gdef}) 
+    
+    all_groups.push(group_all)
+}
 
 
 
 onMount(() => {
     createAllCards();
-
 });
   
 
-function test_FillHydraGroup(ev)  {
-    feedGroup();
-}
-  
+
 </script>
 
 
@@ -250,26 +239,22 @@ function test_FillHydraGroup(ev)  {
     <fieldset class="section">
         <legend>Bulbs &amp; Groups</legend>
 
-        <Group bind:this={group_all} 
-                    on:takesel={ ()=>{feedGroup(group_all)} } 
-                    on:rmsel={ ()=>{rmBulbFromGroup(group_all)} } 
-                    name="All">
-            
-        </Group>
-
+        <!-- ALL GROUP CARDS GO HERE -->
+        <span id="groupcards" />
+        
         <fieldset class="buttonbunch">
             <legend>Selection</legend>
             <button on:click={ () => setSelectionAll(true)}>All</button>
             <button on:click={ () => setSelectionAll(false)}>None</button>
             <button on:click={ () => setSelectionAll(-1)}>Inv</button>
+            <button on:click={ () => createNewGroup() }>+Group</button>
             <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
             <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
             <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
         </fieldset>
-
+        
         <!-- ALL BULB CARDS GO HERE -->
         <span id="bulbcards" />
-    
     
     </fieldset>
 
@@ -282,25 +267,16 @@ function test_FillHydraGroup(ev)  {
         <textarea id="bulbcolorslist"></textarea>
     </fieldset>
     
+ 
     <fieldset class="buttonbunch"> 
-        <legend>All Bulbs</legend>
-        <button on:click={ () => setAllBulbs({on:false}) }>All Off</button>
-        <button on:click={ () => setAllBulbs({on:true}) }>All ON</button>
-    <button on:click={ () => createStandardGroups()}>Add To HYDRA (TEST)</button>
-        <button on:click={ updateAllBulbColorsFromReality }>colorupdate</button>
-        <button on:click={ dumpAllLights }>All Lights JSON</button>
-        <button on:click={ checkAllAvail }>Avail?</button>
-        <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>orange</button>
-        <button on:click={ () => setAllBulbs( {"bri":140,"hue":7811,"sat":168} )  }>white</button>
+        <legend>System</legend>
+
+        
+            <!-- ALL HUB CARDS GO HERE -->
+            <span class="cardstack" id="hubcards" />
     </fieldset>
     
-        
-    <fieldset class="section">
-        <legend>Bridges</legend>
-        <!-- ALL HUB CARDS GO HERE -->
-        <span class="cardstack" id="hubcards" />
-    </fieldset>
-
+    
     <button on:click={unittest_colors}>phcolor.js UT</button>
     
     <address>

@@ -8,14 +8,11 @@ import './Bulb.svelte';
 import TinyColorButtons  from './TinyColorButtons.svelte';
 import { random_color } from './phcolor.js';
 
-import { createEventDispatcher } from 'svelte';
-
 
 export let name = "no-name";
 export let selected = false;
 export let members = [];
-
-const dispatch = createEventDispatcher();
+export let all_bulbs = undefined;  // Access to all bulbs in system to select, add/remove, etc
 
 
 export function takeThisBulb(B)  {
@@ -45,19 +42,24 @@ function selectionClick(ev)  {
 
 
 export function selectMyBulbs(want)   {
-    console.log("About to select bulbs who are my members");
     for (let bulb of members) {
         bulb.selected = want;  
     }
 }
 
-export function eatSelectedBulbs()  {
-    dispatch('takesel', { me:999 });
+export function takeSelectedBulbs()  {
+    for (let b of all_bulbs)   {
+        if (b.available && b.selected)  {
+            takeThisBulb(b);
+        }
+    }
 }
 
+
 export function removeSelectedBulbs()  {
-    dispatch('rmsel', { me:999 });
+   members = members.filter( (b) => (!b.selected) );
 }
+
 
 async function tinyColorChosen(ev)  {
     for (let bulb of members) {
@@ -67,7 +69,6 @@ async function tinyColorChosen(ev)  {
 
 let colorhover=" ";
 function tinyColorHovering(ev)  {
-    //console.log("BULB hears TinyColor message!  ", ev.detail);
     colorhover = ev.detail.name;
 }
 
@@ -93,21 +94,17 @@ function randomColors(params)   {
         class:selected-card={selected}
         on:click={selectionClick}>
 <legend>Group {name} ({members.length})</legend>
-<p>Some group manipulation stuff, add bulbs, ... </p>
-<table>
-    <tr><th>Bulb</th></tr>
     {#each members as bulb, i }
-      <tr><td>{bulb.name}</td></tr>
+      <span>{bulb.name} </span>
     {/each}
-</table>
 
 <br>
 <div class="buttonbunch">
-    <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>All OFF</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>All ON</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>OFF</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>ON</button>
     <button on:click|stopPropagation={ () => setAllBulbs({'bri':1,'hue':4000,'sat':111}) } >dim</button>
     <button on:click|stopPropagation={ () => setAllBulbs({'bri':255,'hue':0,'sat':0}) } >white</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({'bri':150, 'xy':[0.2, 0.1]}) } >mag</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({'bri':150, 'xy':[0.48, 0.22]}) } >mag</button>
 </div>
 
 <TinyColorButtons style="float:right" 
@@ -123,7 +120,7 @@ function randomColors(params)   {
 </div>
 
 <div class="buttonbunch">
-    <button on:click|stopPropagation={ () => eatSelectedBulbs() }>Add</button>
+    <button on:click|stopPropagation={ () => takeSelectedBulbs() }>Add</button>
     <button on:click|stopPropagation={ () => removeSelectedBulbs() }>Rm</button>
     <button on:click|stopPropagation={ () => selectMyBulbs(true) }>Sel</button>
     <button on:click|stopPropagation={ () => selectMyBulbs(false) }>Desel</button>
