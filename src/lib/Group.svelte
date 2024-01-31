@@ -124,7 +124,7 @@ function randomColors(params)   {
 
 <div class="buttonbunch">
     <button on:click|stopPropagation={ () => eatSelectedBulbs() }>Add</button>
-    <button on:click|stopPropagation={ () => removeSelectedBulbs() }>Add</button>
+    <button on:click|stopPropagation={ () => removeSelectedBulbs() }>Rm</button>
     <button on:click|stopPropagation={ () => selectMyBulbs(true) }>Sel</button>
     <button on:click|stopPropagation={ () => selectMyBulbs(false) }>Desel</button>
 </div>

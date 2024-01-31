@@ -160,6 +160,8 @@ return /*
     }*/ ;
 }
 
+
+
 function feedGroup(G) {
     
     console.log("Feeding Group", G.name);
@@ -169,6 +171,21 @@ function feedGroup(G) {
     }
 }
 
+
+function rmBulbFromGroup(G) { 
+    
+    console.log("Feeding Group", G.name);
+    reviewAllBulbs();
+    let new_members = [];
+    for (let b of G.members)  {
+        if (!b.selected)   {
+            new_members.push(b);
+        }
+         
+    }
+    console.log(`new list len=${new_members.length}`);
+    G.members = new_members;
+}
 
 
 
