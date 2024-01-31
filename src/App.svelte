@@ -74,9 +74,15 @@ function updateAllBulbColorsFromReality()  {
   }
   
   
-  function setSelectionAll(want)  {
+ function setSelectionAll(want)  {
     for (let b of all_bulbs)   {
-        b.selected = want;
+        if (b.available)  {
+            if (want <0) {
+                    b.selected = !b.selected;
+            } else {
+                b.selected = want;
+            }
+        }
     }
   }
   
@@ -248,13 +254,14 @@ function test_FillHydraGroup(ev)  {
                     on:takesel={ ()=>{feedGroup(group_all)} } 
                     on:rmsel={ ()=>{rmBulbFromGroup(group_all)} } 
                     name="All">
-            Does this appear anywhere?
+            
         </Group>
 
         <fieldset class="buttonbunch">
             <legend>Selection</legend>
             <button on:click={ () => setSelectionAll(true)}>All</button>
             <button on:click={ () => setSelectionAll(false)}>None</button>
+            <button on:click={ () => setSelectionAll(-1)}>Inv</button>
             <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
             <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
             <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
