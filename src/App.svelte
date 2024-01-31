@@ -238,22 +238,19 @@ function test_FillHydraGroup(ev)  {
 
 <main>
         
-    <Group bind:this={group_all} 
-                on:takesel={ ()=>{feedGroup(group_all)} } 
-                on:rmsel={ ()=>{rmBulbFromGroup(group_all)} } 
-                name="All">
-        Does this appear anywhere?
-    </Group>
-    <Group bind:this={group_hydra} 
-                on:takesel={ ()=>{feedGroup(group_hydra)} } 
-                on:rmsel={ ()=>{rmBulbFromGroup(group_hydra)} } 
-                name="Hydra">
-        Blurp
-    </Group>
     
     
     
     <fieldset class="section">
+        <legend>Bulbs &amp; Groups</legend>
+
+        <Group bind:this={group_all} 
+                    on:takesel={ ()=>{feedGroup(group_all)} } 
+                    on:rmsel={ ()=>{rmBulbFromGroup(group_all)} } 
+                    name="All">
+            Does this appear anywhere?
+        </Group>
+
         <fieldset class="buttonbunch">
             <legend>Selection</legend>
             <button on:click={ () => setSelectionAll(true)}>All</button>
@@ -263,9 +260,8 @@ function test_FillHydraGroup(ev)  {
             <TinyColorButtons  on:color_chosen={tinyColorChosenSelected} />
         </fieldset>
 
-        <legend>Bulbs</legend>
-            <!-- ALL BULB CARDS GO HERE -->
-            <span id="bulbcards" />
+        <!-- ALL BULB CARDS GO HERE -->
+        <span id="bulbcards" />
     
     
     </fieldset>
