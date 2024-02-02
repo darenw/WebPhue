@@ -14,6 +14,7 @@ export let unique_id = "";
 export let selected = false;
 export let available = true;    //  Optimism. False if physically turned off, out of reach
 
+
 export let bulb_is_on = true;
 export let current_bri = 0;
 export let current_sat = 0;
@@ -21,6 +22,9 @@ export let current_hue = 0;
 export let current_ciex = 0;
 export let current_ciey = 0;
 
+let blink_button;
+
+let keep_blinking = false; 
 
 
 export async function checkPhysicalBulbAvailable()  {
@@ -29,6 +33,37 @@ export async function checkPhysicalBulbAvailable()  {
         available = myhub.checkAvailOfBulbByIndex(hib);
     }
 }
+
+
+export  function setjson(json, want_update=false)  {
+    if (myhub)  {
+        myhub.setBulb(hib, json);
+        updateMyColorFromReality();
+    }
+}
+
+
+
+export  function setjson_no_update_color_props(json, want_update=false)  {
+    if (myhub)  {
+        myhub.setBulb(hib, json);
+    }
+}
+
+export function turnBulbOn() {
+    setjson({on:true})
+    bulb_is_on = true;
+}
+
+export function turnBulbOff() {
+clearInterval();
+    setjson({on:false});
+    bulb_is_on = false;
+}
+
+
+
+
 
 
 export async function updateMyColorFromReality()  {
@@ -44,25 +79,8 @@ export async function updateMyColorFromReality()  {
 
 
 
-export  function setjson(json)  {
-    if (myhub)  {
-        myhub.setBulb(hib, json);
-        updateMyColorFromReality();
-    }
-}
 
 
-
-
-export function turnBulbOn() {
-    setjson({on:true})
-    bulb_is_on = true;
-}
-
-export function turnBulbOff() {
-    setjson({on:false});
-    bulb_is_on = false;
-}
 
 
 
@@ -85,6 +103,43 @@ function selectionClick(ev)  {
     selected = !selected;
 }
 
+
+
+let blink_state = false;
+function flip_blink_state()  {
+    if (blink_state)  {
+        setjson_no_update_color_props({"on":false});
+        blink_state=false;
+    } else {
+        setjson_no_update_color_props({"on":true});
+        blink_state=true;
+    }
+}
+
+
+let blinker;
+
+export function startBlinkingBulb(period_seconds = 0.8)   {
+    updateMyColorFromReality();           // unlikely, but just in case our props are not current
+    setjson_no_update_color_props( {bri: 200, sat: 0, hue: 0} );   // blinks white; we're not updating current_color
+    blinker = setInterval(flip_blink_state, 600);
+}
+
+export function stopBlinkingBulb()    {
+        clearInterval(blinker);
+        turnBulbOn();
+        setjson_no_update_color_props( {bri: current_bri,  hue: current_hue,  sat: current_sat} );
+}
+
+function blinkBulb_click() {
+    if (blink_button.innerHTML==="STOP")  {
+        blink_button.innerHTML = "Blink";
+        stopBlinkingBulb();
+    } else {
+        blink_button.innerHTML = "STOP";
+        startBlinkingBulb();
+    }
+}
 
 </script>
 
@@ -130,10 +185,11 @@ function selectionClick(ev)  {
 <div class="buttonbunch">
     <button on:click|stopPropagation={ turnBulbOn } >On</button>
     <button on:click|stopPropagation={ turnBulbOff } >Off</button>
+    <button on:click|stopPropagation={ blinkBulb_click } bind:this={blink_button}>blink</button>
     {#if (!available)}
     <button on:click|stopPropagation={ checkPhysicalBulbAvailable } >avail?</button>
     {/if}
-    <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':44000,'sat':111}) } >dim</button>
+    <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':40000,'sat':111}) } >dimblue</button>
     <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
 </div>
 
@@ -170,6 +226,7 @@ div.tinybuttonbox {
 }
 
 button { margin:0; }
+
 
 .pale-tech { color:#686838; font-size:.7em; }
 
