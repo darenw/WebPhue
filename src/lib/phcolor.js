@@ -62,6 +62,15 @@ console.log(a,b,x,y,minbri,maxbri);
 }
 
 
+export function random_color_json(minbri=0.1, maxbri=1.0)   {
+    const R = random_color(minbri,maxbri);
+    const json = {
+        'bri':  Math.trunc(R.bri*255),
+        'xy':  [ R.ciex, R.ciey ]
+    }
+    return json;
+}
+
 
 /*
  * Mix two colors.  
@@ -156,7 +165,7 @@ export function unittest_colors() {
     const B = { bri: 1.0,  ciex: 0.6,  ciey: 0.8 };
     
     let mixA = mixcolors(A, 0.0, B);
-console.log(A, B, mixA);    
+    console.log(A, B, mixA);    
     assert( isclose(mixA.bri, A.bri) );
     assert( isclose(mixA.ciex, A.ciex) );
     assert( isclose(mixA.ciey, A.ciey) );

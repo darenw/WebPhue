@@ -22,6 +22,24 @@ export let current_hue = 0;
 export let current_ciex = 0;
 export let current_ciey = 0;
 
+const bulb_palette = [
+    [
+        { name:"Zero",    hexrgb:"000",       json:{bri:1,  sat:0,  hue:0} },
+        { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},
+        { name:"Dim",     hexrgb:"#555",  json:{bri: 60, sat:5, hue:1500 }},
+        { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 248, sat:5, hue:1500 }},
+
+    ],
+    [
+        { name:"Blue", hexrgb:"#4c41ec",  json:{bri: 200, sat:210, hue:44800 }},
+        { name:"Green",   hexrgb:"#22f022",   json:{bri: 150, sat:203, hue:25000 } },
+        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }},
+        { name:"Red",   hexrgb:"#ff1000",  json:{bri: 190, sat:255, hue: 10 }},
+
+    ]
+];
+
+
 let blink_button;
 
 let keep_blinking = false; 
@@ -159,6 +177,7 @@ function blinkBulb_click() {
 
 <div class="tinybuttonbox" style="float:right" >
 <TinyColorButtons 
+        palette={bulb_palette}
         on:color_chosen={tinyColorChosen} 
         on:color_hover={tinyColorHovering} 
         on:mouseout={ (ev) => {colorhover="  "} }
@@ -189,7 +208,7 @@ function blinkBulb_click() {
     {#if (!available)}
     <button on:click|stopPropagation={ checkPhysicalBulbAvailable } >avail?</button>
     {/if}
-    <button on:click|stopPropagation={ () => setjson({'bri':2,'hue':40000,'sat':111}) } >dimblue</button>
+    
     <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
 </div>
 

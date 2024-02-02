@@ -29,10 +29,32 @@ export async function  setAllBulbs(json)   {
 }
 
 
-export function blinkAllBulbs(params)   {
-    const period = params["period"];
-    const count  = params["count"];
-    //console.log("PRETEND blink bulbs of group " + name + " for " + count + " times over " + (period*count) + " seconds");
+
+let blink_button; 
+
+function startBlinkingAllMemberBulbs()  {
+    for (let b of members)   {
+        b.startBlinkingBulb();
+    }
+}
+
+function stopBlinkingAllMemberBulbs()  {
+    for (let b of members)  {
+        b.stopBlinkingBulb();
+    }
+}
+
+
+function blinkAllBulbs_click(params)   { 
+    if (blink_button.innerHTML==="STOP")  {
+        blink_button.innerHTML = "Blink";
+        console.log("start blink members");
+        stopBlinkingAllMemberBulbs();
+    } else {
+        blink_button.innerHTML = "STOP";
+        console.log("start blink members");
+        startBlinkingAllMemberBulbs();
+    }        
 }
 
 
@@ -73,15 +95,9 @@ function tinyColorHovering(ev)  {
 }
 
 
-function randomColors(params)   {
+function setMembersRandomColors(params)   {
     for (let bulb of members)  {
-        let R = random_color();
-        console.log(`bulb ${bulb.name} <= ${R.bri}  ${R.ciex} ${R.ciey}`);
-        let json = {
-            'bri':  Math.trunc(R.bri*255),
-            'xy':  [ R.ciex, R.ciey ]
-        }
-        bulb.setjson(json); 
+        bulb.setjson(random_color_json()); 
     }
 }
 
@@ -95,29 +111,27 @@ function randomColors(params)   {
         on:click={selectionClick}>
 <legend>Group {name} ({members.length})</legend>
     {#each members as bulb, i }
-      <span>{bulb.name} </span>
-    {/each}
+      <span class="bulbnames">{bulb.name}&nbsp;</span>
+    {/each} 
 
 <br>
-<div class="buttonbunch">
-    <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>OFF</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>ON</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({'bri':1,'hue':4000,'sat':111}) } >dim</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({'bri':255,'hue':0,'sat':0}) } >white</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({'bri':150, 'xy':[0.48, 0.22]}) } >mag</button>
-</div>
-
-<TinyColorButtons style="float:right" 
+<div class="tinybuttonbox" style="float:right" >
+<TinyColorButtons 
+        
         on:color_chosen={tinyColorChosen} 
         on:color_hover={tinyColorHovering} 
         on:mouseout={ (ev) => {colorhover="  "} }
         />
-<div class="buttonbunch">
-
-    <button on:click|stopPropagation={ () => randomColors({someparam:0.5,another:0.2}) }>Rnd</button>
-    <button on:click|stopPropagation={ () => randomColors({someparam:1.0,another:1.0}) }>(test)</button>
-    <button on:click|stopPropagation={ () => blinkAllBulbs({count:5,period:0.5}) }>Blink</button>
 </div>
+
+<div class="buttonbunch">
+    <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>OFF</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>ON</button>
+    <button on:click|stopPropagation={ () => setAllBulbs({'bri':255,'hue':0,'sat':0}) } >white</button>
+    <button on:click|stopPropagation={ () => blinkAllBulbs_click() } 
+                bind:this={blink_button}>Blink</button>
+</div>
+
 
 <div class="buttonbunch">
     <button on:click|stopPropagation={ () => takeSelectedBulbs() }>Add</button>
@@ -142,5 +156,6 @@ function randomColors(params)   {
 .buttonbunch button { border-color: #060; }
 table { border-color: #060; }
 
+.bulbnames { font-size:.71em; }
 </style>
 

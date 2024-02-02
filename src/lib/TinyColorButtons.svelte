@@ -1,3 +1,5 @@
+<svelte:options accessors />
+
 <script>
 import  { createEventDispatcher } from 'svelte';
 import  { onMount } from 'svelte'
@@ -5,37 +7,29 @@ import  { onMount } from 'svelte'
 
 export let chosen_color_json = {};
 
-const dispatch = createEventDispatcher();
+const default_tiny_button_colors = [
+    [
+        { name:"Green",   hexrgb:"#22f022",   json:{bri: 150, sat:203, hue:25000 } },
+        { name:"Blue", hexrgb:"#4c41ec",  json:{bri: 200, sat:210, hue:44800 }},
+        { name:"Dim Magenta",  hexrgb:"#c802a6",  json:{bri: 62, sat:255, hue:61000 }}
 
-const hardcoded_colors = [
-    [ 
-        { name:"DimBlue",  hexrgb:"#181876",  json:{bri: 12, sat:239, hue:45000 }},
-        { name:"vivid magenta",  hexrgb:"#f812c6",  json:{bri: 62, sat:255, hue:61000 }},
-        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }},
+    ],
+    [
+        { name:"Dim",     hexrgb:"#777",  json:{bri: 60, sat:5, hue:1500 }},
         { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 248, sat:5, hue:1500 }},
-        { name:"MidWhite", hexrgb:"#bcbcbc",  json:{bri: 110, sat:2, hue:10 }}
-    ],
-    [ 
-        { name:"Orange",   hexrgb:"#f0d020",  json:{bri: 182, sat:241, hue:6600 }},
-        { name:"lt pale green",  hexrgb:"#cfffcf",  json:{bri: 222, sat:80, hue:26500 }},
-        { name:"Really Red",   hexrgb:"#ff1000",  json:{bri: 190, sat:255, hue: 10 }},
-        { name:"pink",    hexrgb:"#fcacfc",  json:{bri: 210, sat:90, hue:55100 }},
-        { name:"Blue", hexrgb:"#1c11bc",  json:{bri: 190, sat:210, hue:44800 }}
-    ],
-    [ 
-        { name:"Green",   hexrgb:"#22f022",   json:{bri: 150, sat:203, hue:25000 }},
-        { name:"Dark Green",  hexrgb:"#085806",  json:{bri: 22, sat:190, hue:23000 }},
-        { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},
-        { name:"warm pink", hexrgb:"#ff00ff",   json:{bri: 190, sat:83, hue:100 }},
-        { name:"aqua",    hexrgb:"#60f0f0",   json:{bri: 220, sat:211, hue:37000 }}
-    ],
+        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }}
+    ]
 ];
 
 
-let tinybutsize = 12;
+export let palette = default_tiny_button_colors;
 
-$: nrows = hardcoded_colors.length;
-$: ncols = hardcoded_colors[0].length;   // DANGER! Assuming all rows are same
+const dispatch = createEventDispatcher();
+
+export let tinybutsize = 12;
+
+$: nrows = palette.length;
+$: ncols = palette[0].length;   // DANGER! Assuming all rows are same
 $: canvas_h = nrows * tinybutsize + 1;
 $: canvas_w = ncols * tinybutsize + 1;
 
@@ -52,7 +46,7 @@ function clickColor(ev, justmoving)   {
     let ix = Math.floor( ev.offsetX / tinybutsize );
     let iy = Math.floor( ev.offsetY / tinybutsize );
     if (ix<0 || ix>=ncols || iy<0 || iy>=nrows) return;
-    let z = hardcoded_colors[iy][ix];
+    let z = palette[iy][ix];
     chosen_color_json = z.json;
     dispatch( (justmoving)? 'color_hover' : 'color_chosen',   {
         json: chosen_color_json,
@@ -76,12 +70,12 @@ onMount( () => {
     context.fillStyle = '#444';
     context.rect(0,0,canvas_w,canvas_h);
     context.fill();
-    
+console.log(`NR=    ${nrows}  NC=${ncols}`);
     // Paint the color sample chips
     for (let iy=0; iy<nrows; iy++)   {
         const topy = tinybutsize * iy;
         for (let ix=0; ix<ncols; ix++)   {
-            const colordef = hardcoded_colors[iy][ix];
+            const colordef = palette[iy][ix];
             const rgb = colordef.hexrgb;
             const leftx = tinybutsize * ix;
             context.beginPath();

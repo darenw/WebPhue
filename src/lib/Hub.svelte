@@ -70,9 +70,6 @@ export async function  setAllBulbs(json)   {
     }
 }
 
-function tinyColorChosen(ev)  {
-    setAllBulbs(ev.detail.json);
-}
 
 </script>
 
