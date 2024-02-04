@@ -2,6 +2,7 @@
 
 
 <script>
+import { onDestroy } from 'svelte';
 import TinyColorButtons  from './TinyColorButtons.svelte';
 import './card.css'; 
 
@@ -126,25 +127,27 @@ function selectionClick(ev)  {
 let blink_state = false;
 function flip_blink_state()  {
     if (blink_state)  {
-        setjson_no_update_color_props({"on":false});
+        setjson_no_update_color_props({"on":false, transitiontime:1});
         blink_state=false;
     } else {
-        setjson_no_update_color_props({"on":true});
+        setjson_no_update_color_props({"on":true, bri:200, transitiontime:1});
         blink_state=true;
     }
 }
 
 
-let blinker;
+let blinker = 0;
 
-export function startBlinkingBulb(period_seconds = 0.8)   {
+export function startBlinkingBulb(period_seconds = 2.0)   {
     updateMyColorFromReality();           // unlikely, but just in case our props are not current
-    setjson_no_update_color_props( {bri: 200, sat: 0, hue: 0} );   // blinks white; we're not updating current_color
-    blinker = setInterval(flip_blink_state, 600);
+    setjson_no_update_color_props( {bri: 200, sat: 15, hue: 0} );   // blinks white; we're not updating current_color
+    blinker = setInterval(flip_blink_state, period_seconds/2.0 *1000.0 /*milliseconds*/ );
 }
 
 export function stopBlinkingBulb()    {
-        clearInterval(blinker);
+        
+        if (blinker) clearInterval(blinker);
+        blinker = 0;
         turnBulbOn();
         setjson_no_update_color_props( {bri: current_bri,  hue: current_hue,  sat: current_sat} );
 }
@@ -155,9 +158,18 @@ function blinkBulb_click() {
         stopBlinkingBulb();
     } else {
         blink_button.innerHTML = "STOP";
-        startBlinkingBulb();
+        startBlinkingBulb(1.5);
     }
-}
+} 
+
+
+
+
+
+onDestroy( () => {
+    if (blinker)  stopBlinkingBulb();
+});
+
 
 </script>
 
