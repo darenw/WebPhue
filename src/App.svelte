@@ -6,13 +6,13 @@ import Hub from './lib/Hub.svelte';
 import Bulb from './lib/Bulb.svelte';
 import Group from './lib/Group.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
-import { random_color_json, unittest_colors } from './lib/phcolor.js';
+import { random_color_cie, unittest_colors } from './lib/phcolor.js';
 
 import {bulb_associated_names, 
       hub_associated_names,
       hub_ip_addresses
       }   from './BulbAssignments';
-
+ 
 
 
 let textdump="";
@@ -25,9 +25,6 @@ let cards_box;         // var to binded to DIV holding all Bulb cards
 let group_all;
 
 
-function order_experiment() {
-    /* ? */
-}
 
 async function dumpAllLights()  {
     let dt = "";
@@ -46,7 +43,7 @@ function updateAllBulbColorsFromReality()  {
 }
   
   
-  function dumpBulbStates()   {
+function dumpBulbStates()   {
   
     updateAllBulbColorsFromReality();  
     const listdiv = document.getElementById("bulbcolorslist");
@@ -58,22 +55,22 @@ function updateAllBulbColorsFromReality()  {
         ss += s + "\n";
     }
     listdiv.textContent = ss;
-  }
+}
 
 
 
-  function setBulbStatesFromText()   {
+function setBulbStatesFromText()   {
     
-  }
+}
   
-  async function setAllBulbs(json)   {
+async function setAllBulbs(json)   {
     for (let hub of all_hubs)   {
         hub.setAllBulbs(json);
     }
-  }
+}
   
   
- function setSelectionAll(want)  {
+function setSelectionAll(want)  {
     for (let b of all_bulbs)   {
         if (b.available)  {
             if (want <0) {
@@ -82,11 +79,11 @@ function updateAllBulbColorsFromReality()  {
                 b.selected = want;
             }
         }
-    }
-  }
+    } 
+}
   
   
-  async function setSelBulbs(json)  {
+async function setSelBulbs(json)  {
     console.log("set selected   json=", json);
     
     for (let group of all_groups)  {
@@ -96,37 +93,63 @@ function updateAllBulbColorsFromReality()  {
     }
     
     for (let b of all_bulbs)   {
-        console.log("SetSelBulbs: is ", b, " selected?",  b.selected);
+        console.log("SetSelBulbs: is ", b, " selected?",  b.selected); 
         if (b.selected)  {
             b.setjson(json);
         }
     }
-  }
+}
   
   
-function randomizeSelectedBulbs()  {
+
+function randomizeSelectedBulbs(transition_time=0.4 /*sec*/ )  {
+console.log("RND!!!!");
+    // User may have selected groups and bulbs, with some bulbs being in the selected
+    // groups.  Make a list to avoid double-setting those bulbs. 
+    
+    let bbb = [];
+    
     for (let group of all_groups)  {
         if (group.selected)   {
-            group.setMembersRandomColors();
+            for (let bulb of group.members) {
+                if (!bbb.includes(bulb))  bbb.push(bulb); 
+            }
         }
     }
-    
+    console.log(" RND bulbs from groups: ",  bbb);
     for (let bulb of all_bulbs)  {
         if (bulb.selected)  {
-            bulb.setjson(random_color_json()); 
+                if (!bbb.includes(bulb))  bbb.push(bulb); 
         }
+    }
+    console.log(" RND also individual bubls: ", bbb.length);
+    
+    const tt = Math.trunc(10*transition_time);
+    for (let bulb of bbb) {
+        let b =  0.3+0.7*Math.random() ;
+        let s = (Math.random() + Math.random()) /2;
+        let h = Math.random()*(Math.random()+1)/2;
+        
+        b = Math.trunc(245*b);
+        h = Math.trunc(65535*h);
+        s = Math.trunc(250);
+        const rand = {bri: b, hue: h, sat: s, transitiontime:tt};
+        console.log(`  RND set bulb ${bulb.name} to ${rand.bri} ${rand.hue} now`);
+        bulb.setjson(rand); 
     }
 }  
 
-  function tinyColorChosenSelected(ev) {
+
+
+function tinyColorChosenSelected(ev) {
     setSelBulbs(ev.detail.json);
-  }
-  
-  function checkAllAvail()   {
+}
+
+function checkAllAvail()   {
     for (let b of all_bulbs)   {
         b.checkAvail();
     }
-  }
+}
 
 
 

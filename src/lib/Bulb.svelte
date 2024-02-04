@@ -56,6 +56,7 @@ export async function checkPhysicalBulbAvailable()  {
 
 export  function setjson(json, want_update=false)  {
     if (myhub)  {
+        console.log(`   SETJSON bulb ${name} hib ${hib}  json=${json}`, json);
         myhub.setBulb(hib, json);
         updateMyColorFromReality();
     }
@@ -124,6 +125,10 @@ function selectionClick(ev)  {
 
 
 
+// NOTE on bulb color/on transition time
+// Along with bri:, sat:, on: etc there is a transitiontime: property.
+// The number is integer (integer only?) deciseconds, default 4 (acc'd to rumor)
+//
 let blink_state = false;
 function flip_blink_state()  {
     if (blink_state)  {
@@ -138,10 +143,10 @@ function flip_blink_state()  {
 
 let blinker = 0;
 
-export function startBlinkingBulb(period_seconds = 2.0)   {
+export function startBlinkingBulb(period_seconds = 1.6)   {
     updateMyColorFromReality();           // unlikely, but just in case our props are not current
-    setjson_no_update_color_props( {bri: 200, sat: 15, hue: 0} );   // blinks white; we're not updating current_color
-    blinker = setInterval(flip_blink_state, period_seconds/2.0 *1000.0 /*milliseconds*/ );
+    setjson_no_update_color_props( {bri: 200, sat: 15, hue: 5000} );   // blinks white; we're not updating current_color
+    blinker = setInterval(flip_blink_state, period_seconds/2 *1000.0 /*milliseconds*/ );
 }
 
 export function stopBlinkingBulb()    {
@@ -158,7 +163,7 @@ function blinkBulb_click() {
         stopBlinkingBulb();
     } else {
         blink_button.innerHTML = "STOP";
-        startBlinkingBulb(1.5);
+        startBlinkingBulb(0.9);
     }
 } 
 

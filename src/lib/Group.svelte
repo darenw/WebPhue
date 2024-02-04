@@ -6,7 +6,6 @@
 import './card.css';  
 import './Bulb.svelte'; 
 import TinyColorButtons  from './TinyColorButtons.svelte';
-import { random_color } from './phcolor.js';
 
 
 export let name = "no-name";
@@ -30,7 +29,7 @@ export async function  setAllBulbs(json)   {
 
 
 
-let blink_button; 
+let blink_button;  
 
 function startBlinkingAllMemberBulbs()  {
     for (let b of members)   {
@@ -95,11 +94,6 @@ function tinyColorHovering(ev)  {
 }
 
 
-function setMembersRandomColors(params)   {
-    for (let bulb of members)  {
-        bulb.setjson(random_color_json()); 
-    }
-}
 
 </script>
 

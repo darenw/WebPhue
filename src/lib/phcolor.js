@@ -41,17 +41,25 @@ export function brighten(ciecolor, factor)  {
 
 
 
-export function random_color(minbri=0.1, maxbri = 1.0)   {
-    // For random x,y, first pick random point in a square
+export function random_color_cie( 
+            minbri=0.1, 
+            maxbri = 1.0
+            )   {
+    // For random x,y, first pick random point in a square, 0 to 1 each dimension
     // If in upper-right diagonal half, flip to lower-left half.
     // Then affine transform to fit Phue gamut in CIE chart, simple vector addition.
+    // Blue-violet corner B is the "origin" and R-B and G-B are as if unit vectors.
+    // TODO:  I'm using hardcoded gamut RGB, but ideally would get these from the hardware bulbs.
+    
     let a = Math.random();
     let b = Math.random();
-    if (a+b>1.0)  { 
+    if (a+b>1)  { 
         a=1-a; b=1-b; 
     }
+
     let x = PHGAMUT_BLUE.ciex + (PHGAMUT_RED.ciex-PHGAMUT_BLUE.ciex)*a + (PHGAMUT_GREEN.ciex-PHGAMUT_BLUE.ciex)*b; 
     let y = PHGAMUT_BLUE.ciey+ (PHGAMUT_RED.ciey-PHGAMUT_BLUE.ciey)*a + (PHGAMUT_GREEN.ciey-PHGAMUT_BLUE.ciey)*b; 
+    
 console.log(a,b,x,y,minbri,maxbri);
     let ciecolor = {
         bri: minbri + Math.random()*(maxbri-minbri),
