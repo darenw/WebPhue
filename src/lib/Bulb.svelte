@@ -266,6 +266,10 @@ button { margin:0; }
 
 .pale-tech { color:#686838; font-size:.7em; }
 
+.status {
+    float:right;
+}
+
 .buttonbunch {
     clear:left;
     float:left;
@@ -277,8 +281,5 @@ button { margin:0; }
     font-size:0.7em;
 }
 
-.status {
-    float:right;
-}
 
 </style>

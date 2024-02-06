@@ -6,7 +6,12 @@ import Hub from './lib/Hub.svelte';
 import Bulb from './lib/Bulb.svelte';
 import Group from './lib/Group.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
+import ActionBar from './lib/ActionBar.svelte';
+import * as phue from './lib/phuesystem.js';  // ????????????
+
+
 import { random_color_cie, unittest_colors } from './lib/phcolor.js';
+import {} from './lib/phuesystem.js';
 
 import {bulb_associated_names, 
       hub_associated_names,
@@ -17,9 +22,6 @@ import {bulb_associated_names,
 
 let textdump="";
 
-let all_hubs = [];
-let all_bulbs = [];      // all Bulb UI components, hope they match physical bulbs
-let all_groups = [];
 let cards_box;         // var to binded to DIV holding all Bulb cards
 
 let group_all;
@@ -28,7 +30,7 @@ let group_all;
 
 async function dumpAllLights()  {
     let dt = "";
-    for (let hub of all_hubs)   {
+    for (let hub of phue.all_hubs)   {
         let jsonx = await hub.dumpBulbStates();
         dt +=  JSON.stringify( jsonx );
     }
@@ -36,19 +38,13 @@ async function dumpAllLights()  {
 }
 
 
-function updateAllBulbColorsFromReality()  {
-    for (let bulb of all_bulbs)   {
-        bulb.updateMyColorFromReality();
-    }
-}
-  
   
 function dumpBulbStates()   {
   
-    updateAllBulbColorsFromReality();  
+    phue.updateAllBulbColorsFromReality();  
     const listdiv = document.getElementById("bulbcolorslist");
     let ss="";
-    for (let bulb of all_bulbs)  {
+    for (let bulb of phue.all_bulbs)  {
         const cc = {bulb: bulb.name, color:{on: bulb.bulb_is_on }};
         const s =`bulb ${bulb.name} ${bulb.bulb_is_on? "on":"off"} B=${bulb.current_bri} S=${bulb.current_sat} H=${bulb.current_hue} x=${bulb.current_ciex} y=${bulb.current_ciey}`;
         console.log(s);
@@ -63,93 +59,8 @@ function setBulbStatesFromText()   {
     
 }
   
-async function setAllBulbs(json)   {
-    for (let hub of all_hubs)   {
-        hub.setAllBulbs(json);
-    }
-}
-  
-  
-function setSelectionAll(want)  {
-    for (let b of all_bulbs)   {
-        if (b.available)  {
-            if (want <0) {
-                    b.selected = !b.selected;
-            } else {
-                b.selected = want;
-            }
-        }
-    } 
-}
-  
-  
-async function setSelBulbs(json)  {
-    console.log("set selected   json=", json);
-    
-    for (let group of all_groups)  {
-        if (group.selected)   {
-            group.setAllBulbs(json);
-        }
-    }
-    
-    for (let b of all_bulbs)   {
-        console.log("SetSelBulbs: is ", b, " selected?",  b.selected); 
-        if (b.selected)  {
-            b.setjson(json);
-        }
-    }
-}
-  
   
 
-function randomizeSelectedBulbs(transition_time=0.4 /*sec*/ )  {
-console.log("RND!!!!");
-    // User may have selected groups and bulbs, with some bulbs being in the selected
-    // groups.  Make a list to avoid double-setting those bulbs. 
-    
-    let bbb = [];
-    
-    for (let group of all_groups)  {
-        if (group.selected)   {
-            for (let bulb of group.members) {
-                if (!bbb.includes(bulb))  bbb.push(bulb); 
-            }
-        }
-    }
-    console.log(" RND bulbs from groups: ",  bbb);
-    for (let bulb of all_bulbs)  {
-        if (bulb.selected)  {
-                if (!bbb.includes(bulb))  bbb.push(bulb); 
-        }
-    }
-    console.log(" RND also individual bubls: ", bbb.length);
-    
-    const tt = Math.trunc(10*transition_time);
-    for (let bulb of bbb) {
-        let b =  0.3+0.7*Math.random() ;
-        let s = (Math.random() + Math.random()) /2;
-        let h = Math.random()*(Math.random()+1)/2;
-        
-        b = Math.trunc(245*b);
-        h = Math.trunc(65535*h);
-        s = Math.trunc(250);
-        const rand = {bri: b, hue: h, sat: s, transitiontime:tt};
-        console.log(`  RND set bulb ${bulb.name} to ${rand.bri} ${rand.hue} now`);
-        bulb.setjson(rand); 
-    }
-}  
-
-
-
-function tinyColorChosenSelected(ev) {
-    setSelBulbs(ev.detail.json);
-}
-
-function checkAllAvail()   {
-    for (let b of all_bulbs)   {
-        b.checkAvail();
-    }
-}
 
 
 
@@ -169,7 +80,7 @@ async function createAllHubCards()  {
             mac: conf.mac,
             ipaddr: ip
         }});
-        all_hubs.push(hub);
+        phue.all_hubs.push(hub);
     }
     console.log("Done making hubs");
 }
@@ -210,7 +121,7 @@ async function createAllCards()  {
 
     // Get bulb info from _all_ hubs first before trying to sort them
     let bulbdefs = []
-    for (let hub of all_hubs)  {
+    for (let hub of phue.all_hubs)  {
         let new_defs = await makeBulbDefinitionsForHub(hub);
         console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
         bulbdefs.push(...new_defs);
@@ -221,7 +132,7 @@ async function createAllCards()  {
     let bulbcards = document.getElementById("bulbcards");
     for (let bdef of bulbdefs)  {
         let newb = new Bulb({target: bulbcards,  props: bdef});
-        all_bulbs.push(newb);
+        phue.all_bulbs.push(newb);
         newb.updateMyColorFromReality();
     }
 
@@ -230,31 +141,18 @@ async function createAllCards()  {
 }  
 
 
-function createNewGroup()  {
-    
-    let selected_bulbs = all_bulbs.filter( (b) => b.selected );
-    let gdef = {
-        name: "NEW_"+all_groups.length,  // Need to let user enter name
-        members: selected_bulbs,
-        all_bulbs: all_bulbs
-    }
-    group_all = new Group({target: groupcards, props: gdef}) 
-    
-    all_groups.push(group_all)
-}
-
 
 async function createAllGroups()   {
-    console.log("ALL Gr ", all_groups);
+    console.log("ALL Gr ", phue.all_groups);
     
     let gdef = {
         name: "All",
-        members: all_bulbs.slice(),
-        all_bulbs: all_bulbs
+        members: phue.all_bulbs.slice(),
+        all_bulbs: phue.all_bulbs
     }
     group_all = new Group({target: groupcards, props: gdef}) 
     
-    all_groups.push(group_all)
+    phue.all_groups.push(group_all)
 }
 
 
@@ -263,42 +161,6 @@ onMount(() => {
     createAllCards();
 });
   
-
-
-
-const hardcoded_colors = [
-    [ 
-        { name:"Blue", hexrgb:"#4c41dc",  json:{bri: 190, sat:210, hue:44800 }},
-        { name:"DimBlue",  hexrgb:"#181876",  json:{bri: 12, sat:239, hue:45000 }},
-        { name:"Dark Green",  hexrgb:"#085806",  json:{bri: 22, sat:190, hue:23000 }},
-        { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},
-        
-        { name:"Dim Red",   hexrgb:"#771000",  json:{bri: 90, sat:255, hue: 10 }},
-        { name:"Red",   hexrgb:"#ff1000",  json:{bri: 190, sat:255, hue: 10 }},
-        { name:"dim magenta",  hexrgb:"#c802a6",  json:{bri: 62, sat:255, hue:61000 }},
-    ],
-    [ 
-        { name:"violet",  hexrgb:"#8818f6",  json:{bri: 210, sat:220, hue:45000 }},
-        { name:"aqua",    hexrgb:"#50ecd8",   json:{bri: 220, sat:211, hue:37000 }},
-        { name:"lt pale green",  hexrgb:"#cfffcf",  json:{bri: 222, sat:80, hue:26500 }},
-        
-        { name:"hot",  hexrgb:"#eef",  json:{bri: 244, sat:33, hue:41000 }},
-        { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 248, sat:5, hue:1500 }},
-        { name:"MidWhite", hexrgb:"#bcbcbc",  json:{bri: 110, sat:2, hue:10 }},
-        { name:"dim pale blue",  hexrgb:"#224",  json:{bri: 222, sat:80, hue:36000 }},
-    ],
-    [ 
-        { name:"magenta",  hexrgb:"#da2cf6",  json:{bri: 212, sat:210, hue:55000 }},
-        { name:"Green",   hexrgb:"#22f022",   json:{bri: 150, sat:203, hue:25000 }},
-        { name:"gr yel", hexrgb:"#bbff0c",   json:{bri: 170, sat:223, hue:17100 }},
-
-        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }},
-        { name:"Orange",   hexrgb:"#f0d020",  json:{bri: 182, sat:241, hue:6600 }},
-        { name:"glork",  hexrgb:"#fca",  json:{bri: 232, sat:90, hue:5000 }},
-        { name:"pink",    hexrgb:"#ff99ff",  json:{bri: 210, sat:90, hue:55100 }},
-    ],
-];
-
 
 
 </script>
@@ -318,18 +180,7 @@ const hardcoded_colors = [
         <!-- ALL GROUP CARDS GO HERE -->
         <span id="groupcards" />
         
-        <fieldset class="buttonbunch">
-            <legend>Selection</legend>
-            <button on:click={ () => setSelectionAll(true)}>All</button>
-            <button on:click={ () => setSelectionAll(false)}>None</button>
-            <button on:click={ () => setSelectionAll(-1)}>Inv</button>
-            <button on:click={ () => createNewGroup() }>+Group</button>
-            
-            <button on:click={ () => setSelBulbs({"on":false} )}>Off</button>
-            <button on:click={ () => setSelBulbs({"on":true} )} >ON</button>
-            <button on:click={ randomizeSelectedBulbs } >Rnd</button>
-            <TinyColorButtons palette={hardcoded_colors} on:color_chosen={tinyColorChosenSelected} />
-        </fieldset>
+        <ActionBar ></ActionBar>
         
         <!-- ALL BULB CARDS GO HERE -->
         <span id="bulbcards" />
@@ -339,7 +190,7 @@ const hardcoded_colors = [
     
     
     <fieldset class="section">
-        <legend>Memory</legend>
+        <legend>Technobabble Debug Testing</legend>
         <button on:click={dumpBulbStates}>Dump</button>
         <button on:click={setBulbStatesFromText}>Set</button>
         <textarea id="bulbcolorslist"></textarea>
@@ -348,13 +199,12 @@ const hardcoded_colors = [
  
     <fieldset class="buttonbunch"> 
         <legend>System</legend>
-
         
             <!-- ALL HUB CARDS GO HERE -->
             <span class="cardstack" id="hubcards" />
             
             <div>
-            <button on:click={updateAllBulbColorsFromReality}>reality update</button>
+            <button on:click={phue.updateAllBulbColorsFromReality}>reality update</button>
             <button on:click={ () => { } }>useless</button>
             </div>
     </fieldset>
@@ -392,21 +242,6 @@ const hardcoded_colors = [
 .cardstack {
     display: flex;
     padding:2px;
-}
-
-.buttonbunch {
-    display: flex;
-    background:#d8d8fd;
-    border:4px solid #55a;
-    border-radius:0.7em;
-    padding:.53rem;
-    margin-top:.6em;
-}
-
-.buttonbunch button  {
-    margin:2px;
-    border:2px solid #448;
-    border-radius:6px;
 }
 
 .overall {

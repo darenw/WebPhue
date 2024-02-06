@@ -47,6 +47,7 @@
 
 .buttonbunch {
     display: flex;
+    
 }
 .buttonbunch button {
     border:2px solid #0dd;
