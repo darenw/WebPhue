@@ -20,9 +20,9 @@ export function createNewGroup()  {
         members: selected_bulbs,
         all_bulbs: all_bulbs
     }
-    group_all = new Group({target: groupcards, props: gdef}) 
+    let g = new Group({target: groupcards, props: gdef}) 
     
-    all_groups.push(group_all)
+    all_groups.push(g)
 }
 
 
