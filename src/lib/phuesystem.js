@@ -116,7 +116,7 @@ console.log("RND!!!!");
         
         b = Math.trunc(245*b);
         h = Math.trunc(65535*h);
-        s = Math.trunc(250);
+        s = Math.trunc(250*s);
         const rand = {bri: b, hue: h, sat: s, transitiontime:tt};
         console.log(`  RND set bulb ${bulb.name} to ${rand.bri} ${rand.hue} now`);
         bulb.setjson(rand); 

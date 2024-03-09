@@ -27,7 +27,7 @@ function tinyColorChosenSelected(ev) {
 const hardcoded_colors = [
     [ 
         { name:"Blue", hexrgb:"#4c41dc",  json:{bri: 190, sat:210, hue:44800 }},
-        { name:"DimBlue",  hexrgb:"#181876",  json:{bri: 12, sat:239, hue:45000 }},
+        { name:"dimcyan",  hexrgb:"#1c5856",  json:{bri: 48, sat:219, hue:35000 }},
         { name:"Dark Green",  hexrgb:"#085806",  json:{bri: 22, sat:190, hue:23000 }},
         { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},
         
@@ -36,7 +36,7 @@ const hardcoded_colors = [
         { name:"dim magenta",  hexrgb:"#c802a6",  json:{bri: 62, sat:255, hue:61000 }},
     ],
     [ 
-        { name:"violet",  hexrgb:"#8818f6",  json:{bri: 210, sat:220, hue:45000 }},
+        { name:"violet",  hexrgb:"#8818f6",  json:{bri: 210, sat:220, hue:47500 }},
         { name:"aqua",    hexrgb:"#50ecd8",   json:{bri: 220, sat:211, hue:37000 }},
         { name:"lt pale green",  hexrgb:"#cfffcf",  json:{bri: 222, sat:80, hue:26500 }},
         
