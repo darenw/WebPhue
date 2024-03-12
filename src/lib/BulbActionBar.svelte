@@ -10,7 +10,7 @@ import TinyColorButtons  from './TinyColorButtons.svelte';
   
 
 function tinyColorChosenSelected(ev) {
-    phue.setColorOfSelectedBulbs(ev.detail.json);
+    phue.setSelBulbs(ev.detail.json);
 }
 
 const hardcoded_colors = [
@@ -59,11 +59,27 @@ const hardcoded_colors = [
     &nbsp;
     <button on:click={ () => phue.setSelBulbs({"on":false} )}>Off</button>
     <button on:click={ () => phue.setSelBulbs({"on":true} )} >ON</button>
-    
+    <button on:click={ phue.randomizeSelectedBulbs } >Rnd</button>
+    <button on:click={ phue.randomSeriesSelectedBulbs}>RndSer</button>
     <TinyColorButtons palette={hardcoded_colors} on:color_chosen={tinyColorChosenSelected} />
 </fieldset>
 
 <style>
+
+
+fieldset {
+    border:4px solid #222;
+    border-radius:0.7em;
+    border-color: #55a;
+    background:#d8d8fd;
+}
+
+.buttonbunch {
+}
+
+.buttonbunch button  {
+    border-color: #44c;
+}
 
 
 </style>

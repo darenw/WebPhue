@@ -147,7 +147,7 @@ onMount(() => {
         <!-- ALL GROUP CARDS GO HERE -->
         <span id="groupcards" />
         
-        <GroupActionBar />
+        <!-- <GroupActionBar /> -->
     </fieldset>
     
     
