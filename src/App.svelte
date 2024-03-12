@@ -4,7 +4,7 @@ import svelteLogo from './assets/svelte.svg';
 
 import Hub from './lib/Hub.svelte';
 import Bulb from './lib/Bulb.svelte';
-import Group from './lib/Group.svelte';
+import Group from './lib/Group2.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
 import BulbActionBar from './lib/BulbActionBar.svelte';
 import GroupActionBar from './lib/GroupActionBar.svelte';

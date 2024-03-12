@@ -2,7 +2,7 @@
 
 import Hub from './Hub.svelte';
 import Bulb from './Bulb.svelte';
-import Group from './Group.svelte';
+import Group from './Group2.svelte';
 
 
 export let all_hubs = [];
