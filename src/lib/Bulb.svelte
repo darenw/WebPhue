@@ -23,7 +23,7 @@ export let current_hue = 0;
 export let current_ciex = 0;
 export let current_ciey = 0;
 
-const bulb_palette = [
+export const bulb_palette = [
     [
         { name:"Zero",    hexrgb:"000",       json:{bri:1,  sat:0,  hue:0} },
         { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},

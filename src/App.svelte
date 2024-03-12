@@ -6,7 +6,8 @@ import Hub from './lib/Hub.svelte';
 import Bulb from './lib/Bulb.svelte';
 import Group from './lib/Group.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
-import ActionBar from './lib/ActionBar.svelte';
+import BulbActionBar from './lib/BulbActionBar.svelte';
+import GroupActionBar from './lib/GroupActionBar.svelte';
 import * as phue from './lib/phuesystem.js';  // ????????????
 
 
@@ -25,41 +26,6 @@ let textdump="";
 let cards_box;         // var to binded to DIV holding all Bulb cards
 
 let group_all;
-
-
-
-async function dumpAllLights()  {
-    let dt = "";
-    for (let hub of phue.all_hubs)   {
-        let jsonx = await hub.dumpBulbStates();
-        dt +=  JSON.stringify( jsonx );
-    }
-    textdump = dt;
-}
-
-
-  
-function dumpBulbStates()   {
-  
-    phue.updateAllBulbColorsFromReality();  
-    const listdiv = document.getElementById("bulbcolorslist");
-    let ss="";
-    for (let bulb of phue.all_bulbs)  {
-        const cc = {bulb: bulb.name, color:{on: bulb.bulb_is_on }};
-        const s =`bulb ${bulb.name} ${bulb.bulb_is_on? "on":"off"} B=${bulb.current_bri} S=${bulb.current_sat} H=${bulb.current_hue} x=${bulb.current_ciex} y=${bulb.current_ciey}`;
-        console.log(s);
-        ss += s + "\n";
-    }
-    listdiv.textContent = ss;
-}
-
-
-
-function setBulbStatesFromText()   {
-    
-}
-  
-  
 
 
 
@@ -174,27 +140,27 @@ onMount(() => {
 <main>
         
     
+    
     <fieldset class="section">
-        <legend>Bulbs &amp; Groups</legend>
+        <legend>Groups</legend>
 
         <!-- ALL GROUP CARDS GO HERE -->
         <span id="groupcards" />
         
-        <ActionBar ></ActionBar>
+        <GroupActionBar />
+    </fieldset>
+    
+    
+    <fieldset class="section">
+        <legend>Bulbs</legend>
+
+        <BulbActionBar />
         
         <!-- ALL BULB CARDS GO HERE -->
         <span id="bulbcards" />
     
     </fieldset>
 
-    
-    
-    <fieldset class="section">
-        <legend>Technobabble Debug Testing</legend>
-        <button on:click={dumpBulbStates}>Dump</button>
-        <button on:click={setBulbStatesFromText}>Set</button>
-        <textarea id="bulbcolorslist"></textarea>
-    </fieldset>
     
  
     <fieldset class="buttonbunch"> 

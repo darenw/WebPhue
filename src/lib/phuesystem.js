@@ -28,8 +28,12 @@ export function createNewGroup()  {
 
 
 
-
-export function setSelectionAll(want)  {
+/*
+ * want = true     selects all bulbs
+ * want = false    deselects all bulbs
+ * want = -1       flips selection
+ */
+export function setSelectionAllBulbs(want)  {
     for (let b of all_bulbs)   {
         if (b.available)  {
             if (want <0) {
@@ -40,6 +44,18 @@ export function setSelectionAll(want)  {
         }
     } 
 }
+
+
+export function setSelectionAllGroups(want)  {
+    for (let g of all_groups)   {
+            if (want <0) {
+                    g.selected = !g.selected;
+            } else {
+                g.selected = want;
+            }
+    } 
+}
+
   
   
 export function checkAllAvail()   {
@@ -67,14 +83,8 @@ export async function setAllBulbs(json)   {
   
 
   
-export async function setSelBulbs(json)  {
+export async function setColorOfSelectedBulbs(json)  {
     console.log("set selected   json=", json);
-    
-    for (let group of all_groups)  {
-        if (group.selected)   {
-            group.setAllBulbs(json);
-        }
-    }
     
     for (let b of all_bulbs)   {
         console.log("SetSelBulbs: is ", b, " selected?",  b.selected); 

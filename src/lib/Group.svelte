@@ -121,7 +121,6 @@ function tinyColorHovering(ev)  {
 <div class="buttonbunch">
     <button on:click|stopPropagation={ () => setAllBulbs({on:false}) }>OFF</button>
     <button on:click|stopPropagation={ () => setAllBulbs({on:true}) }>ON</button>
-    <button on:click|stopPropagation={ () => setAllBulbs({'bri':255,'hue':0,'sat':0}) } >white</button>
     <button on:click|stopPropagation={ () => blinkAllBulbs_click() } 
                 bind:this={blink_button}>Blink</button>
 </div>
