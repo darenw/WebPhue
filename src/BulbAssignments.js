@@ -16,7 +16,7 @@ export const hub_associated_names = [
     {  
        bridgeid: "001788FFFE218A2E",
 	   mac:   "00:17:88:21:8a:2e",
-       key: "cTiCCIRzOjL1mNuoN1ndDwaQhFSlpsojUIfjKT-u",
+       key: "OLoCEqUQJ22mLEpNQFp5FKQa7rmq53TSWd6RedAY",
        name:  "Hub2"  
     }
 ];

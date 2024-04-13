@@ -98,7 +98,9 @@ export async function updateMyColorFromReality()  {
 }
 
 
-
+function unOwnMe()  {
+    
+}
 
 
 
@@ -224,9 +226,11 @@ onDestroy( () => {
     <button on:click|stopPropagation={ blinkBulb_click } bind:this={blink_button}>blink</button>
     {#if (!available)}
     <button on:click|stopPropagation={ checkPhysicalBulbAvailable } >avail?</button>
+    {:else}
+    <button on:click|stopPropagation={ unOwnMe } >de-own</button>
     {/if}
-    
-    <button on:click|stopPropagation={ () => setjson({'bri':251,'hue':8000,'sat':11}) } >white</button>
+    <button on:click|stopPropagation={ () => setjson({'bri':251,'xy':[0.33,0.33]}) } >white</button>
+    <button on:click|stopPropagation={ () => setjson({'bri':201,'hue':22000,'sat':171}) } >green</button>
 </div>
 
 <p class="status">{colorhover}</p>

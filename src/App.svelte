@@ -8,17 +8,11 @@ import Group from './lib/Group2.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
 import BulbActionBar from './lib/BulbActionBar.svelte';
 import GroupActionBar from './lib/GroupActionBar.svelte';
-import * as phue from './lib/phuesystem.js';  // ????????????
+import * as phue from './lib/phuesystem.js';  
 
 
 import { random_color_cie, unittest_colors } from './lib/phcolor.js';
 import {} from './lib/phuesystem.js';
-
-import {bulb_associated_names, 
-      hub_associated_names,
-      hub_ip_addresses
-      }   from './BulbAssignments';
- 
 
 
 let textdump="";
@@ -29,97 +23,12 @@ let group_all;
 
 
 
-
-async function createAllHubCards()  {
-    console.log("Fetching Hub info, making Hub Cards");
-    let hh = document.getElementById("hubcards");
-    for (let ip of hub_ip_addresses)  {
-        console.log("making hub for ", ip);
-        let url =  "http://" + ip + "/api/config";
-        const reply = await fetch(url);
-        const conf =  await reply.json();
-        const mac = conf.mac;
-        let hinfo = hub_associated_names.find( (a) => mac === a.mac );
-        let hub = new Hub( { target:hh, props:{
-            name: hinfo.name,
-            key: hinfo.key,
-            mac: conf.mac,
-            ipaddr: ip
-        }});
-        phue.all_hubs.push(hub);
-    }
-    console.log("Done making hubs");
-}
-  
-  
-
-async function makeBulbDefinitionsForHub(hub)   {
-    console.log("Making cards for all bulbs of hub ", hub.name);
-    let allbulbinfo = await hub.dumpBulbStates().catch((e)=>console.log(e));
-    let defs =[];
-    for (let b in allbulbinfo)  {
-        let bulb = allbulbinfo[b];
-        const buid = bulb.uniqueid;
-        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
-        let found_name = (z)? z.name :  hub.name + ':' + b;
-        let avail = bulb.state.reachable;
-        let bulb_props ={
-                myhub:hub, 
-                hib:b, 
-                unique_id:bulb.uniqueid,
-                model:bulb.modelid,
-                name: found_name,
-                available: avail
-        };
-        console.log(" $$ ", bulb_props);
-        defs.push(bulb_props);
-    }
-    return defs;
-}
-
-
-
-
-
 async function createAllCards()  {
-
-    await createAllHubCards();
-
-    // Get bulb info from _all_ hubs first before trying to sort them
-    let bulbdefs = []
-    for (let hub of phue.all_hubs)  {
-        let new_defs = await makeBulbDefinitionsForHub(hub);
-        console.log("for hub ", hub.name, "  bulbs reoprted: ", new_defs);
-        bulbdefs.push(...new_defs);
-    }
-
-    bulbdefs.sort( (a,b) => a.name.localeCompare(b.name) );
-
-    let bulbcards = document.getElementById("bulbcards");
-    for (let bdef of bulbdefs)  {
-        let newb = new Bulb({target: bulbcards,  props: bdef});
-        phue.all_bulbs.push(newb);
-        newb.updateMyColorFromReality();
-    }
-
-    createAllGroups();
+    await phue.createAllHubCards();
+    await phue.createAllBulbCards();
+    phue.createAllGroups();
 
 }  
-
-
-
-async function createAllGroups()   {
-    console.log("ALL Gr ", phue.all_groups);
-    
-    let gdef = {
-        name: "All",
-        members: phue.all_bulbs.slice(),
-        all_bulbs: phue.all_bulbs
-    }
-    group_all = new Group({target: groupcards, props: gdef}) 
-    
-    phue.all_groups.push(group_all)
-}
 
 
 

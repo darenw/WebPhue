@@ -1,0 +1,35 @@
+Reworking the WebPhue UI
+
+
+I've been using WebPhue [] as it was, with no notable further changes, for over a month. While as a hobby project it's still a work in progress, missing some major basic features, it's been partly useful in everyday life. But a few things about the UI annoyed me. 
+
+I had one panel of buttons to control any lights that were selected as a Bulb, in the yellow Bulb cards below, as part of a Group, in the green Group cards above. I found this annoying, especially if I intended to turn off or randomize the bulbs in a certain Group, but didn't realize I had a Bulb selected below, one not in the selected Group.  Or I wanted to turn off one Bulb and didn't notice all the Groups were selected, so poof! Off go all the lights everywhere. And just how often, except for testing, do I need to select multiple Groups or invert their selection?  
+
+I decided to split the one big Bulbs & Groups section into two separate sections, one just for Bulbs, with its own panel of buttons for on/off, blinking, etc. and a new section just for Groups.  Those groups don't really need any buttons since, the more I thought about it, the more it made sense to have Group controls only inside each Group card. To quickly turn off all bulbs in a Group, there's a no-fuss OFF button in each Group's card. Groups are not selectable. Just click the desired button inside the one Group.   Want to do anything fancier like randomize colors or run some animation?  Select all the Bulbs you want to be involved, perhaps by clicking the "Sel" button in a Group, and use the Bulb section's button panel.  
+
+There's a new button, nothing spectacular, but a randomizer that generates two random colors then sets all selected Bulbs to points along the line joining those two colors.  It does its work in BHS space (brightness, hue, saturation), probably a bad idea. Maybe later I'll rewrite it to work in CIE x,y space. 
+
+Some of the functions in the button "ActionBar" panel did something to all selected Bulbs, all the one with selected yellow cards and also all the ones belonging to any selected Groups.  Not difficult code, but it did require a few extra lines of Javascript to avoid duplicating Bulbs in the action. Now, with the action buttons working only on the set of currently selected Bulbs, there are no surprises. 
+
+This redesign involved thinking about exactly which controls need to be right there inside each Bulb card, and which to be put in a common area. For testing, setup, debugging purposes it's helpful to have On, Off, Blink and maybe just a few buttons to set some standard hard-coded colors. A typical use case might be when you're trying to figure out which bulb in the physical world goes with the yellow card labelled "BedPole3".  Blink it, using the button right there in the card, and there's no question that it's BedPole3 that's blinking.  
+
+Similar for Groups. On, Off, Blink to find which physical world bulbs are in that group. If one bulb should be blinking but isn't, you can find out fast and can fix it quickly.  
+
+
+TO DO
+[ ] Bulb "avail?" button - fix "dead" bulb detection and check for revival
+[ ] Show current color in each bulb card.  Click on this color sample and a full color picker pops up.
+[ ] A color map component, showing a CIE chart or some other with marks all selected Bulbs or all Bulbs.  Maybe let the user drag those marks around to set a Bulb's colors.
+[ ] Tell a Hub to search for new Bulbs.  This will be easy. I just need to do it.
+[ ] A WebPhue server, just a crummy hackjob version for now, for WebPhue to save and recall all config info and current colors. Also an easy task which I just need to do.
+[ ] Experiment with color animations. Maybe cycle a set of colors through a set of bulbs. 
+
+
+
+
+Remember this is a hobby project, getting only the attention it does when I'm not busy with other things.  There is no overall plan, project management. Just "design at the keyboard" level of engineering.  Good thing I'm not working on this for pay - I would have fired myself long ago!
+
+
+( ͡^ ͜ʖ ͡^ )
+(ᴗᵔᴥᵔ)
+

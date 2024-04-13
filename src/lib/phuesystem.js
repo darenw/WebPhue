@@ -3,6 +3,11 @@
 import Hub from './Hub.svelte';
 import Bulb from './Bulb.svelte';
 import Group from './Group2.svelte';
+import {
+        hub_ip_addresses,
+        hub_associated_names,
+        bulb_associated_names
+    } from '../BulbAssignments';
 
 
 export let all_hubs = [];
@@ -70,7 +75,7 @@ export function checkAllAvail()   {
 
 
 export function updateAllBulbColorsFromReality()  {
-    for (let bulb of phue.all_bulbs)   {
+    for (let bulb of all_bulbs)   {
         bulb.updateMyColorFromReality();
     }
 }
@@ -167,3 +172,130 @@ export function randomSeriesSelectedBulbs(transition_time=0.3 /*seconds*/)  {
         selected_bulbs[i].setjson(z);
     }
 }
+
+
+
+
+export
+async function createAllHubCards()  {
+    console.log("Fetching Hub info, making Hub Cards...");
+    let hub_card_div = document.getElementById("hubcards");
+    console.log("hub IP addr = ", hub_ip_addresses );
+    for (let ip of hub_ip_addresses)  {
+        let url =  "http://" + ip + "/api/config";
+        const reply = await fetch(url).catch();
+        const conf =  await reply.json();
+        const mac = conf.mac;
+        let hinfo = hub_associated_names.find( (a) => mac === a.mac );
+        let hub = new Hub( { target: hub_card_div, props: {
+            name: hinfo.name,
+            key: hinfo.key,
+            mac: conf.mac,
+            ipaddr: ip
+        }});
+        all_hubs.push(hub);
+        console.log(`Made card for ${hub.name} ${hub.ipaddr} ${hub.mac}`);
+    }
+    console.log("Done making hub cards");
+}
+
+
+
+export
+async function makeBulbDefinitionsFromHub(hub)   {
+    console.log("Making bulb defs for all bulbs of hub ", hub.name);
+    
+    let allbulbinfo =  await hub.dumpBulbStates().catch((e)=>console.log("Hub dump fail:", e));
+    console.log("allbulbinfo = ", allbulbinfo);
+    if (allbulbinfo.length<1) return [];
+    
+    let defs =[];
+    for (let b in allbulbinfo)  {
+        const bulb = allbulbinfo[b];
+        const buid = bulb.uniqueid;
+        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
+        let found_name = (z)? z.name :  hub.name + ':' + b;
+        let avail = bulb.state.reachable;
+        let def ={
+                myhub:hub, 
+                hib:b, 
+                unique_id:bulb.uniqueid,
+                model:bulb.modelid,
+                name: found_name,
+                available: avail
+        };
+        console.log("   len defs=", defs.length, "  about to push def=", def);
+        defs.push(def);
+        console.log(`    -> now defs len = ${defs.length}`);
+    }
+    
+    console.log("DONE. Defs for this hub: ",  defs);
+    return defs;
+}
+
+
+
+
+export
+function addNewBulbCardsFromDefs(bulb_defs)  {
+
+    let all_known_bulb_ids = all_bulbs.map( (b) => b.unique_id );
+                console.log("All known bulbid: ", all_known_bulb_ids);
+
+    let bulb_card_div = document.getElementById("bulbcards");
+
+    console.log("Making new Bulb cards...");
+    for (let def of bulb_defs)  {
+        console.log("Considering bulbdef ", def, " having id ", def.uniqueid);
+        if (all_known_bulb_ids.includes(def.uniqueid))  continue;
+        console.log("... survived duplication filter!  Making Bulb...");
+        let newb = new Bulb({target: bulb_card_div,  props: def});
+        console.log("have new Bulb ", newb, "  all_bulbs count = ", all_bulbs.length);
+        all_bulbs.push(newb);
+        console.log("add to all_bulbs, new len =", all_bulbs.length);
+        newb.updateMyColorFromReality();
+    }    
+    console.log("DONE makinig bulb cards.");
+}
+
+
+
+export
+async function createAllBulbCards()   {
+    console.log("START createAllBulbCards");
+    let bulbdefs = [];
+    for (let hub of all_hubs)  {
+        const more_defs = await makeBulbDefinitionsFromHub(hub);
+        bulbdefs = bulbdefs.concat(more_defs);
+    }
+    
+    console.log("len=", bulbdefs.length, "List of ALL bulbdefs from all hubs: ",  bulbdefs);
+    if (bulbdefs.length===0) {
+        return;
+    }
+    
+    bulbdefs.sort( (a,b) => a.name.localeCompare(b.name) );
+    
+    addNewBulbCardsFromDefs(bulbdefs);
+    console.log("DONE createAllBulbCards");
+}
+
+
+
+export
+async function createAllGroups()   {
+    console.log("ALL Gr ", all_groups);
+    
+    let gdef = {
+        name: "All",
+        members: all_bulbs.slice(),
+        all_bulbs: all_bulbs
+    }
+    let group_all = new Group({target: groupcards, props: gdef}) 
+    
+    all_groups.push(group_all)
+}
+
+
+
+

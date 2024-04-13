@@ -1,0 +1,38 @@
+
+------------------ works in WebPhue ----------------------
+const delayFetch = (url, http_options) =>
+  new Promise( (resolve) => {
+    setTimeout(() => {
+      resolve(fetch(url, http_options));
+    }, http_options.delay);
+});
+
+
+---------- reliable source on JS -------------------
+function getExampleText() {
+  return new Promise(resolve => {
+    fetch('http://example.com')
+      .then(res => res.text())
+      .then(text => {
+        console.log('text of example.com:', text)
+        resolve(text)
+      })
+  })
+}
+
+----------- claimed to be bad, returns before final .then ----------
+function doSomething() {
+  new Promise(async (resolve) => {
+    var x = 0;
+    await doSomethingElse();
+    ...
+    resolve(true);
+  }).then((result) => {
+    return result;
+  })
+}
+
+
+
+https://stackoverflow.com/questions/51628723/adding-async-await-without-having-to-modify-parent-calling-functions
+
