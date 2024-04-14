@@ -4,9 +4,9 @@ import Hub from './Hub.svelte';
 import Bulb from './Bulb.svelte';
 import Group from './Group2.svelte';
 import {
-        hub_ip_addresses,
-        hub_associated_names,
-        bulb_associated_names
+        get_hub_ip_addresses,
+        get_hub_info,
+        get_bulb_associated_names
     } from '../BulbAssignments';
 
 
@@ -179,14 +179,18 @@ export function randomSeriesSelectedBulbs(transition_time=0.3 /*seconds*/)  {
 export
 async function createAllHubCards()  {
     console.log("Fetching Hub info, making Hub Cards...");
+    
     let hub_card_div = document.getElementById("hubcards");
+    
+    const hub_ip_addresses = get_hub_ip_addresses();
+    const hub_info = get_hub_info();
     console.log("hub IP addr = ", hub_ip_addresses );
     for (let ip of hub_ip_addresses)  {
         let url =  "http://" + ip + "/api/config";
         const reply = await fetch(url).catch();
         const conf =  await reply.json();
         const mac = conf.mac;
-        let hinfo = hub_associated_names.find( (a) => mac === a.mac );
+        let hinfo = hub_info.find( (a) => mac === a.mac );
         let hub = new Hub( { target: hub_card_div, props: {
             name: hinfo.name,
             key: hinfo.key,
@@ -213,7 +217,8 @@ async function makeBulbDefinitionsFromHub(hub)   {
     for (let b in allbulbinfo)  {
         const bulb = allbulbinfo[b];
         const buid = bulb.uniqueid;
-        let z = bulb_associated_names.find( (ba) =>  buid.includes(ba.hwid) );
+        const associated_names = get_bulb_associated_names();
+        let z = associated_names.find( (ba) =>  buid.includes(ba.hwid) );
         let found_name = (z)? z.name :  hub.name + ':' + b;
         let avail = bulb.state.reachable;
         let def ={

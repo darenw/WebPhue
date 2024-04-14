@@ -2,7 +2,7 @@
 import { onMount } from 'svelte';
 import svelteLogo from './assets/svelte.svg';
 
-import Hub from './lib/Hub.svelte';
+import Hub from './lib/Hub.svelte'; 
 import Bulb from './lib/Bulb.svelte';
 import Group from './lib/Group2.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
