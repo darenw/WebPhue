@@ -6,6 +6,7 @@ import Hub from './lib/Hub.svelte';
 import Bulb from './lib/Bulb.svelte';
 import Group from './lib/Group2.svelte';
 import TinyColorButtons  from './lib/TinyColorButtons.svelte';
+import BulbSelectionBar from './lib/BulbSelectionBar.svelte';
 import BulbActionBar from './lib/BulbActionBar.svelte';
 import GroupActionBar from './lib/GroupActionBar.svelte';
 import * as phue from './lib/phuesystem.js';  
@@ -62,8 +63,8 @@ onMount(() => {
     
     <fieldset class="section">
         <legend>Bulbs</legend>
-
-        <BulbActionBar />
+        <div style="float:left;"><BulbSelectionBar /></div>
+        <div><BulbActionBar  /></div>
         
         <!-- ALL BULB CARDS GO HERE -->
         <span id="bulbcards" />
