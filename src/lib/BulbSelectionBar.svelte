@@ -1,4 +1,3 @@
-
 <svelte:options accessors />
 
 
@@ -6,7 +5,6 @@
 import Hub from './Hub.svelte';
 import Bulb from './Bulb.svelte';
 import * as phue from './phuesystem.js';
-
 </script>
 
 

@@ -11,7 +11,6 @@ import BulbActionBar from './lib/BulbActionBar.svelte';
 import GroupActionBar from './lib/GroupActionBar.svelte';
 import * as phue from './lib/phuesystem.js';  
 
-
 import { random_color_cie, unittest_colors } from './lib/phcolor.js';
 import {} from './lib/phuesystem.js';
 
@@ -39,9 +38,10 @@ onMount(() => {
   
 
 
+
+let dialogxxx;
+
 </script>
-
-
 
 
 
@@ -49,7 +49,6 @@ onMount(() => {
 
 <main>
         
-    
     
     <fieldset class="section">
         <legend>Groups</legend>
@@ -71,8 +70,6 @@ onMount(() => {
     
     </fieldset>
 
-    
- 
     <fieldset class="buttonbunch"> 
         <legend>System</legend>
         
@@ -84,7 +81,6 @@ onMount(() => {
             <button on:click={ () => { } }>useless</button>
             </div>
     </fieldset>
-    
     
     <button on:click={unittest_colors}>phcolor.js UT</button>
     

@@ -2,9 +2,12 @@
 
 
 <script>
-import { onDestroy } from 'svelte';
+import { onDestroy, getContext } from 'svelte';
 import TinyColorButtons  from './TinyColorButtons.svelte';
+import AdjustValue from './AdjustValue.svelte';
 import './card.css'; 
+
+// const { open } = getContext('simple-modal');
 
 export let name = "unnamed";
 export let myhub;           // ref to a Hub component created in App
@@ -26,16 +29,18 @@ export let current_ciey = 0;
 export const bulb_palette = [
     [
         { name:"Zero",    hexrgb:"000",       json:{bri:1,  sat:0,  hue:0} },
-        { name:"Brown",   hexrgb:"#6c5128",   json:{bri: 30, sat:173, hue:7500 }},
-        { name:"Dim",     hexrgb:"#555",  json:{bri: 60, sat:5, hue:1500 }},
-        { name:"White",    hexrgb:"#fcfcfc",  json:{bri: 248, sat:5, hue:1500 }},
+        { name:"Dim",     hexrgb:"#555",  json:{bri: 60, sat:25, hue:1500 }},
+        { name:"Medium",    hexrgb:"#aaa",  json:{bri: 144, sat:13, hue:6500 }},
+        { name:"Bright",    hexrgb:"#fff",  json:{bri: 255, sat:7, hue:8000 }},
+        { name:"Peach",    hexrgb:"#fca",  json:{bri: 233, sat:85, hue:5003 }},
 
     ],
     [
         { name:"Blue", hexrgb:"#4c41ec",  json:{bri: 200, sat:210, hue:44800 }},
-        { name:"Green",   hexrgb:"#22f022",   json:{bri: 150, sat:203, hue:25000 } },
-        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 252, sat:201, hue:9710 }},
-        { name:"Red",   hexrgb:"#ff1000",  json:{bri: 190, sat:255, hue: 10 }},
+        { name:"Green",   hexrgb:"#22f022",   json:{bri: 220, sat:203, hue:25000 } },
+        { name:"Yellow",   hexrgb:"#fdfd94",  json:{bri: 222, sat:201, hue:9710 }},
+        { name:"Red",   hexrgb:"#ff1000",  json:{bri: 220, sat:255, hue: 10 }},
+        { name:"Magenta",   hexrgb:"#ff10ff",  json:{bri: 220, sat:250, hue: 61000 }},
 
     ]
 ];
@@ -54,26 +59,25 @@ export async function checkPhysicalBulbAvailable()  {
 }
 
 
-export  function setjson(json, want_update=false)  {
-    if (myhub)  {
-        console.log(`   SETJSON bulb ${name} hib ${hib}  json=${json}`, json);
-        myhub.setBulb(hib, json);
-        updateMyColorFromReality();
-    }
-}
 
-
-
-export  function setjson_no_update_color_props(json, want_update=false)  {
+export function setjson_no_update(json)  {
     if (myhub)  {
         myhub.setBulb(hib, json);
     }
 }
+
+export  function setjson(json)   {
+    setjson_no_update(json);
+    updateMyColorFromReality();
+}
+
+
 
 export function turnBulbOn() {
     setjson({on:true})
     bulb_is_on = true;
 }
+
 
 export function turnBulbOff() {
 clearInterval();
@@ -88,6 +92,7 @@ clearInterval();
 
 export async function updateMyColorFromReality()  {
     const state = await myhub.getBulbStateJson(hib);
+    console.log("Reality update:  ", state);
     current_bri = state["bri"]; 
     current_sat = state["sat"]; 
     current_hue = state["hue"];
@@ -134,10 +139,10 @@ function selectionClick(ev)  {
 let blink_state = false;
 function flip_blink_state()  {
     if (blink_state)  {
-        setjson_no_update_color_props({"on":false, transitiontime:1});
+        setjson_no_update({"on":false, transitiontime:1});
         blink_state=false;
     } else {
-        setjson_no_update_color_props({"on":true, bri:200, transitiontime:1});
+        setjson_no_update({"on":true, bri:200, transitiontime:1});
         blink_state=true;
     }
 }
@@ -147,16 +152,16 @@ let blinker = 0;
 
 export function startBlinkingBulb(period_seconds = 1.6)   {
     updateMyColorFromReality();           // unlikely, but just in case our props are not current
-    setjson_no_update_color_props( {bri: 200, sat: 15, hue: 5000} );   // blinks white; we're not updating current_color
+    setjson_no_update( {bri: 200, sat: 15, hue: 5000} );   // blinks white; we're not updating current_color
     blinker = setInterval(flip_blink_state, period_seconds/2 *1000.0 /*milliseconds*/ );
 }
 
+
 export function stopBlinkingBulb()    {
-        
         if (blinker) clearInterval(blinker);
         blinker = 0;
         turnBulbOn();
-        setjson_no_update_color_props( {bri: current_bri,  hue: current_hue,  sat: current_sat} );
+        setjson_no_update( {bri: current_bri,  hue: current_hue,  sat: current_sat} );
 }
 
 function blinkBulb_click() {
@@ -171,6 +176,94 @@ function blinkBulb_click() {
 
 
 
+//------------------------- Adjust Value Dialog ------------------------//
+
+// Variable representing the AdjustValue popup dialog with one slider and an OK button
+let theAdjustValueDialog;
+
+// Variables used to pass info to/from the AdjustValue Dialog 
+let vad_name;
+let vad_value;
+let vad_min;
+let vad_max;
+let vad_step;
+let vad_updater;
+let vad_ok;
+
+$: {
+    console.log("  value changed to ", vad_value);
+    if (vad_updater) vad_updater(vad_value);
+}
+
+
+function popupAdjustValue(param_name, init_value, min_value, max_value, value_step, updater=()=>{})  {
+    vad_updater = updater;
+    vad_name = param_name;
+    vad_value = init_value;
+    vad_min = min_value; 
+    vad_max = max_value;
+    vad_step = value_step;
+    vad_ok = 0;
+    console.log(`SHOW ADJVAL   ${vad_name}, current value ${vad_value} (limits ${vad_min} to ${vad_max} for bulb ${name}`);
+    theAdjustValueDialog.showModal();
+    console.log("CLOSED ADJVAL  vad_value=", vad_value);
+    
+    if (vad_ok)  {
+        console.log("AdjustValue() returning with new value = ", vad_value, " for ", param_name);
+        return vad_value;
+    } else {
+        console.log("AdjustValue() returning CANCEL ret init=", init_value, "    ignored modified value =", vad_value);
+        return init_value;
+    }
+}
+
+
+
+
+function adjust_bri()  {
+    let new_bri = popupAdjustValue("Brightness", 
+            current_bri, 
+            0, 255, 1, 
+            (v)=>{setjson({'bri': Math.trunc(v) });}
+            );
+    // setjson({'bri': Math.trunc(new_bri) });
+}
+
+function adjust_sat()  {
+    let new_sat = popupAdjustValue("Saturation", 
+            current_sat, 
+            0, 255, 1,
+            (v)=>{setjson({'sat': Math.trunc(v) });}
+            );
+}
+
+function adjust_hue()  {
+    let new_hue = popupAdjustValue("Hue", 
+            current_hue, 
+            0, 65535, 100,
+            (v)=>{ setjson( {'hue': Math.trunc(v)} ); }
+            );
+    //setjson({'hue': Math.trunc(new_hue) });
+}
+
+function adjust_x()  {
+    let new_x = popupAdjustValue("CIE x", 
+            current_ciex, 
+            0.0, 1.0, 0.001,
+            (v)=>{setjson( {'xy': [v,current_ciey] } );}
+            );
+}
+
+function adjust_y()  {
+    let new_y = popupAdjustValue("CIE y", 
+            current_ciey, 
+            0.0, 1.0, 0.001,
+            (v)=>{setjson( {'xy': [current_ciex,v] } );}
+
+            );
+}
+
+
 
 
 onDestroy( () => {
@@ -180,8 +273,10 @@ onDestroy( () => {
 
 </script>
 
-<!---------------------------   H T M L   ---------------------------->
 
+
+
+<!---------------------------   H T M L   ---------------------------->
 
 
 <fieldset class="card" 
@@ -203,21 +298,55 @@ onDestroy( () => {
         />
 </div>
 
+
 <table>
     <tr>
-        <th>bri</th>
-        <th>sat</th>
-        <th>hue</th>
-        <th>CIE x</th>
-        <th>y</th>
+        <th on:click|stopPropagation={adjust_bri}>bri</th>
+        <th on:click|stopPropagation={adjust_sat}>sat</th>
+        <th on:click|stopPropagation={adjust_hue}>hue</th>
+        <th on:click|stopPropagation={adjust_x}>CIE x</th>
+        <th on:click|stopPropagation={adjust_y}>y</th>
     </tr>
     <tr>
-        <td>{current_bri}</td>
-        <td>{current_sat}</td>
-        <td>{current_hue}</td>
-        <td>{current_ciex}</td><td>{current_ciey}</td>
+        <td on:click|stopPropagation={adjust_bri}>{current_bri}</td>
+        <td on:click|stopPropagation={adjust_sat}>{current_sat}</td>
+        <td on:click|stopPropagation={adjust_hue}>{current_hue}</td>
+        <td on:click|stopPropagation={adjust_x}>{current_ciex}</td>
+        <td on:click|stopPropagation={adjust_y}>{current_ciey}</td>
     </tr>
 </table>
+
+
+<AdjustValue
+            bind:dialog={theAdjustValueDialog}   
+            on:close={ () => console.log('AdjustValue closed')}
+            >
+    <h1>Adjust {vad_name} </h1>  
+    
+    <!-- h2>param {vad_name} currently {vad_value} min {vad_min} max {vad_max}</h2 -->
+    
+    <input type="range"  
+            min={vad_min}
+            max={vad_max}
+            step={vad_step}
+            bind:value={vad_value}
+             
+            >
+    
+    <button on:click={  () => {
+                vad_ok=false; 
+                theAdjustValueDialog.close(); 
+                console.log("on:click: Close CANCEL"); 
+                }  
+    }>Cancel</button>
+    
+    <button on:click={  () => {
+                vad_ok=true; 
+                theAdjustValueDialog.close(); 
+                console.log("on:click: Close SET"); 
+                }  
+    }>Set</button>    
+</AdjustValue>
 
 
 <div class="buttonbunch">
@@ -244,6 +373,9 @@ onDestroy( () => {
 <!---------------------------   S T Y L E   ---------------------------->
 
 <style>
+
+.vam_popup {border:red solid 22px;}
+
 .card { 
     border-color:#773; 
     background:#fffad9;

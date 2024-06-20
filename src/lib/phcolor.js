@@ -5,6 +5,10 @@
  * All Colors are using the CIE (1931) x,y system
  * 
  * (c) Daren Scot Wilson 2022
+ * 
+ * some useful references:
+ *   https://www.waveformlighting.com/tech/calculate-cie-1931-xy-coordinates-from-cct
+ *
  */
 
 

@@ -5,7 +5,7 @@
 
 
 // PLAN: eliminate this line, get from some sort of persistent storage
-const _hub_ip_addresses = [ "192.168.1.85", "192.168.1.9" ];
+const _hub_ip_addresses = [ "192.168.1.85" ];    // , "192.168.1.9" ];
 
 export function get_hub_ip_addresses()   {
     return _hub_ip_addresses;
