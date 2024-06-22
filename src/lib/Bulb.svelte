@@ -92,7 +92,7 @@ clearInterval();
 
 export async function updateMyColorFromReality()  {
     const state = await myhub.getBulbStateJson(hib);
-    console.log("Reality update:  ", state);
+    //console.log("Reality update:  ", state);
     current_bri = state["bri"]; 
     current_sat = state["sat"]; 
     current_hue = state["hue"];
@@ -180,6 +180,9 @@ function blinkBulb_click() {
 
 // Variable representing the AdjustValue popup dialog with one slider and an OK button
 let theAdjustValueDialog;
+
+const vad_slider_width = 512;
+const vad_ticlist = [0, 25, 50, 75, 100];  // % along slider
 
 // Variables used to pass info to/from the AdjustValue Dialog 
 let vad_name;
@@ -321,31 +324,46 @@ onDestroy( () => {
             bind:dialog={theAdjustValueDialog}   
             on:close={ () => console.log('AdjustValue closed')}
             >
-    <h1>Adjust {vad_name} </h1>  
+    <h1>Adjust {vad_name} for {name}</h1>  
     
     <!-- h2>param {vad_name} currently {vad_value} min {vad_min} max {vad_max}</h2 -->
-    
+    <span>{vad_value}</span>
+    <br>
+    <span class="minmax-label">{vad_min}</span>
     <input type="range"  
+            width={vad_slider_width}
             min={vad_min}
             max={vad_max}
             step={vad_step}
+            list="ticlist"
             bind:value={vad_value}
-             
             >
+    <span class="minmax-label">{vad_max}</span>
+            
+    <datalist id="ticlist">
+        {#each vad_ticlist as ticpercent, i}
+        <!-- value is of variable begin adjusted, not pixels, not fraction along slider -->
+        <option value={ticpercent*(vad_max-vad_min)/100.0 + vad_min} />
+        {/each}
+    </datalist>
+    <br>
     
     <button on:click={  () => {
                 vad_ok=false; 
                 theAdjustValueDialog.close(); 
-                console.log("on:click: Close CANCEL"); 
+                console.log("on:click: Close CANCEL,  vad_ok=", vad_ok); 
                 }  
-    }>Cancel</button>
+            }
+    >Cancel</button>
     
     <button on:click={  () => {
                 vad_ok=true; 
+                
                 theAdjustValueDialog.close(); 
-                console.log("on:click: Close SET"); 
+                console.log("on:click: Close SET,  vad_ok=", vad_ok); 
                 }  
-    }>Set</button>    
+            }
+    >Set</button>    
 </AdjustValue>
 
 
