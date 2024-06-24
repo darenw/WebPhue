@@ -181,12 +181,13 @@ function blinkBulb_click() {
 // Variable representing the AdjustValue popup dialog with one slider and an OK button
 let theAdjustValueDialog;
 
-const vad_slider_width = 512;
+const vad_slider_width = 340;
 const vad_ticlist = [0, 25, 50, 75, 100];  // % along slider
 
 // Variables used to pass info to/from the AdjustValue Dialog 
 let vad_name;
 let vad_value;
+let vad_value_initial;
 let vad_min;
 let vad_max;
 let vad_step;
@@ -203,6 +204,7 @@ function popupAdjustValue(param_name, init_value, min_value, max_value, value_st
     vad_updater = updater;
     vad_name = param_name;
     vad_value = init_value;
+    vad_value_initial = init_value;
     vad_min = min_value; 
     vad_max = max_value;
     vad_step = value_step;
@@ -331,11 +333,11 @@ onDestroy( () => {
     <br>
     <span class="minmax-label">{vad_min}</span>
     <input type="range"  
-            width={vad_slider_width}
+            class="valueslider"
             min={vad_min}
             max={vad_max}
             step={vad_step}
-            list="ticlist"
+            
             bind:value={vad_value}
             >
     <span class="minmax-label">{vad_max}</span>
@@ -343,7 +345,7 @@ onDestroy( () => {
     <datalist id="ticlist">
         {#each vad_ticlist as ticpercent, i}
         <!-- value is of variable begin adjusted, not pixels, not fraction along slider -->
-        <option value={ticpercent*(vad_max-vad_min)/100.0 + vad_min} />
+        <!-- <option value={ticpercent*(vad_max-vad_min)/100.0 + vad_min} /> -->
         {/each}
     </datalist>
     <br>
@@ -351,6 +353,7 @@ onDestroy( () => {
     <button on:click={  () => {
                 vad_ok=false; 
                 theAdjustValueDialog.close(); 
+                vad_value = vad_value_initial;
                 console.log("on:click: Close CANCEL,  vad_ok=", vad_ok); 
                 }  
             }
@@ -435,5 +438,7 @@ button { margin:0; }
     font-size:0.7em;
 }
 
+
+valueslider { width:480px;  }
 
 </style>
